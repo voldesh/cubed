@@ -1,0 +1,238 @@
+{
+    "dimensions": [
+        { "name":"name", "label":"Name"},
+	{ "name":"category", "label":"Category"},
+	{ "name":"keywords", "label":"Keywords"},
+	{ "name":"author", "label": "Author"}
+    ],
+    "cubes": [
+	 {
+            "name": "FB_POSTS_DATA",
+            "dimensions": ["name","category"],
+            "measures": [
+                { "name":"like", "aggregations": ["sum", "avg", "min", "max"]},
+		{ "name":"share", "aggregations": ["sum", "avg", "min", "max"]},
+		{ "name":"comment", "aggregations": ["sum", "avg", "min", "max"]},
+		{ "name":"ctr", "aggregations": ["sum", "avg", "min", "max"]}
+            ],
+            "aggregates": [
+                    {
+                        "name": "total_likes",
+                        "function": "sum",
+                        "measure": "like"
+                    },
+	
+		    {
+                        "name": "total_shares",
+                        "function": "sum",
+                        "measure": "share"
+                    },
+
+		    {
+                        "name": "min_likes",
+                        "function": "min",
+                        "measure": "like"
+                    },
+
+                    {
+                        "name": "min_shares",
+                        "function": "min",
+                        "measure": "share"
+                    },
+
+		    {
+                        "name": "max_likes",
+                        "function": "max",
+                        "measure": "like"
+                    },
+
+                    {
+                        "name": "max_shares",
+                        "function": "max",
+                        "measure": "share"
+                    },
+
+		    {
+                        "name": "avg_likes",
+                        "function": "avg",
+                        "measure": "like"
+                    },  
+                    
+                    {
+                        "name": "avg_shares",
+                        "function": "avg",
+                        "measure": "share"
+                    },
+
+		    {
+                        "name": "total_comments",
+                        "function": "sum",
+                        "measure": "comment"
+                    },
+
+                    {
+                        "name": "total_ctr",
+                        "function": "sum",
+                        "measure": "ctr"
+                    },
+
+		    {
+                        "name": "min_comments",
+                        "function": "min",
+                        "measure": "comment"
+                    },
+
+                    {
+                        "name": "min_ctr",
+                        "function": "min",
+                        "measure": "ctr"
+                    },
+
+		    {
+                        "name": "max_comments",
+                        "function": "max",
+                        "measure": "comment"
+                    },
+
+                    {
+                        "name": "max_ctr",
+                        "function": "max",
+                        "measure": "ctr"
+                    },
+
+                    {
+                        "name": "avg_comments",
+                        "function": "avg",
+                        "measure": "comment"
+                    },  
+                    
+                    {
+                        "name": "avg_ctr",
+                        "function": "avg",
+                        "measure": "ctr"
+                    },
+
+		    {
+			"name": "record_count",
+			"function": "count"
+		    }
+                ]
+	},
+	{
+		"name": "KEYWORDS_DATA",
+		"dimensions": ["keywords"],
+		"measures": [
+                {"name":"like", "aggregations": ["sum", "avg", "min", "max"]},
+                { "name":"share", "aggregations": ["sum", "avg", "min", "max"]},
+                { "name":"comment", "aggregations": ["sum", "avg", "min", "max"]},
+                { "name":"ctr", "aggregations": ["sum", "avg", "min", "max"]}
+            ],
+            "aggregates": [
+                    {
+                        "name": "total_likes",
+                        "function": "sum",
+                        "measure": "like"
+                    },
+
+                    {
+                        "name": "total_shares",
+                        "function": "sum",
+                        "measure": "share"
+                    },
+
+		    {
+                        "name": "min_likes",
+                        "function": "min",
+                        "measure": "like"
+                    },
+
+                    {
+                        "name": "min_shares",
+                        "function": "min",
+                        "measure": "share"
+                    },
+
+                    {
+                        "name": "max_likes",
+                        "function": "max",
+                        "measure": "like"
+                    },
+
+                    {
+                        "name": "max_shares",
+                        "function": "max",
+                        "measure": "share"
+                    },
+
+		    {
+                        "name": "avg_likes",
+                        "function": "avg",
+                        "measure": "like"
+                    },
+
+                    {
+                        "name": "avg_shares",
+                        "function": "avg",
+                        "measure": "share"
+                    },
+		    
+		    {
+                        "name": "total_comments",
+                        "function": "sum",
+                        "measure": "comment"
+                    },
+
+                    {
+                        "name": "total_ctr",
+                        "function": "sum",
+                        "measure": "ctr"
+                    },
+
+                    {
+                        "name": "min_comments",
+                        "function": "min",
+                        "measure": "comment"
+                    },
+
+                    {
+                        "name": "min_ctr",
+                        "function": "min",
+                        "measure": "ctr"
+                    },
+
+                    {
+                        "name": "max_comments",
+                        "function": "max",
+                        "measure": "comment"
+                    },
+
+                    {
+                        "name": "max_ctr",
+                        "function": "max",
+                        "measure": "ctr"
+                    },
+
+                    {
+                        "name": "avg_comments",
+                        "function": "avg",
+                        "measure": "comment"
+                    },
+
+                    {
+                        "name": "avg_ctr",
+                        "function": "avg",
+                        "measure": "ctr"
+                    },
+
+                    {
+                        "name": "record_count",
+                        "function": "count"
+                    }
+
+                ]
+	
+	}
+     ]
+}
+          
+
