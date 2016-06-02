@@ -5,6 +5,9 @@ import urllib2
 import json
 import csv
 import time
+import requests
+import os
+import unicodedata
 
 # categories array to be fetched from the ScoopWhoop url source page of each post
 categories = []
@@ -12,23 +15,17 @@ categories = []
 # 2 D array containing array of keywords of each post
 keywords = []
 
-# TODO: get page links through json
 
 def get_page_links(data):
 	' Returns a list of ScoopWhoop page urls to be used to get categories and keywords '
 
-	# Hard coded the 5 page urls for now
-	pages = ['http://www.scoopwhoop.com/Aishwaryas-Famous-Purple-Lips-On-Other-Bollywood-Actresses-?ref=social&type=fb&b=0','http://www.scoopwhoop.com/ghanta-awards-bollywood-2016/?ref=social&type=fb&b=0','http://www.scoopwhoop.com/Meghana-Erande-Voice-Behind-Ninja-Hattori-Famous-Cartoon-Characters/?ref=social&type=fb&b=0','http://www.scoopwhoop.com/Mouni-Roy-Goa-Trip/?ref=social&type=fb&b=0','http://www.scoopwhoop.com/Anshuman-In-Jab-We-Met-Tollywood-Actor/?ref=social&type=fb&b=0']
-
-	return pages
-
-	'''pages = []
+	pages = []
 
 	# Getting page url from each post
 	for d in data:
-		pages.append('')
+		pages.append(d['link'])
 
-	return pages'''
+	return pages
 
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
@@ -36,6 +33,8 @@ def get_categories_keywords(pages):
 	' Fills global arrays categories[] and keywords[] from page URLs '
 
 	global categories, keywords
+
+	passes = 0
 
 	for page in pages:
 		# Temporary string of keywords which is to be stripped and splitted at commas to get a list of keywords
@@ -55,10 +54,20 @@ def get_categories_keywords(pages):
 			if(meta.get('name')=='keywords'):
 				keys = str(meta.get('content'))
 
+
+		if len(categories) != passes + 1:
+			categories.append(''.encode("utf-8"))
+
 		# Process temporary string by List Comprehension
 		tt = [x.strip() for x in keys.split(',')]
 
 		keywords.append(tt)
+
+		passes = passes + 1
+
+		print categories[passes-1]
+
+		print "Completed " + str(passes)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
@@ -74,7 +83,7 @@ def get_index_from_json(data, key, value):
 def write_into_csv(data, owriter, owriter1):
 	' Writes into two csv files data.csv and keywords_data.csv parsing the JSON data file'
 
-        owriter.writerow(['id','name','description','message','category', 'likes', 'shares', 'comments', 'ctr'])
+        owriter.writerow(['id','name','message','category', 'likes', 'shares', 'comments', 'ctr'])
 	owriter1.writerow(['id', 'keywords', 'likes', 'shares', 'comments', 'ctr'])
 
 	# Key and Search Pattern to search for the index
@@ -91,24 +100,52 @@ def write_into_csv(data, owriter, owriter1):
 		# Use this index value to get likes, comments and shares of each post
 	        idx = get_index_from_json(d, key, search_pattern)
 
-                owriter.writerow([
-				d['id'],
-				d['name'].encode("utf-8"), 
-				d['description'].encode("utf-8"),
-				d['message'].encode("utf-8"),
- 				categories[category_idx],
-				d['insights']['data'][idx]['values'][0]['value']['like'], 
-				d['insights']['data'][idx]['values'][0]['value']['share'], 
-				d['insights']['data'][idx]['values'][0]['value']['comment'], 
-				ctr])
+		if 'name' in d.keys():
+                        name = d['name']
+			name = unicodedata.normalize('NFKD', name).encode('ascii','ignore')
+                else:
+                        name = ''
 
+		if 'message' in d.keys():
+			message = d['message']
+			message = unicodedata.normalize('NFKD', message).encode('ascii','ignore')
+		else:
+			message = ''
+
+		if 'like' in d['insights']['data'][idx]['values'][0]['value'].keys():
+                        like = d['insights']['data'][idx]['values'][0]['value']['like']
+                else:
+                        like = 0
+
+
+		if 'share' in d['insights']['data'][idx]['values'][0]['value'].keys():
+                        share = d['insights']['data'][idx]['values'][0]['value']['share']
+                else:
+                        share = 0
+
+		if 'comment' in d['insights']['data'][idx]['values'][0]['value'].keys():
+                        comment = d['insights']['data'][idx]['values'][0]['value']['comment']
+                else:
+                        comment = 0
+
+
+		owriter.writerow([
+				d['id'],
+				name,
+				message,
+				categories[category_idx],
+				like,
+				share, 
+				comment, 
+				ctr])
+		
 		for column in xrange(len(keywords[row])):
                         owriter1.writerow([
                                         d['id'],
                                         keywords[row][column],
-					d['insights']['data'][idx]['values'][0]['value']['like'], 
-                                	d['insights']['data'][idx]['values'][0]['value']['share'], 
-                                	d['insights']['data'][idx]['values'][0]['value']['comment'], 
+					like,
+                                	share,   
+                                	comment, 
                                 	ctr])
 
 		row = row + 1
@@ -161,38 +198,37 @@ def calc_ctr(d):
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
 if __name__== '__main__':
-	
-	s_time = time.time()
+	while True:
+		print 'loading JSON data. . .\n'
 
-	print 'loading JSON data. . .\n'
+		r = requests.get('http://172.18.2.209:8090/')
 
-	with open('fb_posts.json') as data_file:    
-		data = json.load(data_file)
+		data = r.json()
 
+		csv_file = open('fb_posts_data.csv','w')
+		csv_file1 = open('keywords_data.csv', 'w')
 
-	csv_file = open('fb_posts_data.csv','w')
-	csv_file1 = open('keywords_data.csv', 'w')
+		owriter = csv.writer(csv_file)
+		owriter1 = csv.writer(csv_file1)
 
-	owriter = csv.writer(csv_file)
-	owriter1 = csv.writer(csv_file1)
+		print 'get page links. . .\n'
 
-	print 'get page links. . .\n'
+		pages = get_page_links(data)
 
-	pages = get_page_links(data)
+		print 'loading categories and keywords. . .\n'
 
-	print 'loading categories and keywords. . .\n'
+		get_categories_keywords(pages)
 
-	get_categories_keywords(pages)
+		print 'writing into csv files. . .\n'
 
-	print 'writing into csv files. . .\n'
+		write_into_csv(data, owriter, owriter1)
 
-	write_into_csv(data, owriter, owriter1)
+		print 'data loaded successfully!\n'
 
-	print 'data loaded successfully!\n'
+		csv_file.close()
+		csv_file1.close()
 
+		os.system('python prep_data.py')
 
-	e_time = time.time()
+		time.sleep(60)
 
-	t_time = format(e_time - s_time, '.2f')
-
-	print 'Total Time Taken : ' + str(t_time) + ' seconds\n'
