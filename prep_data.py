@@ -24,9 +24,9 @@ class FB_Data(Base):
     
     #tell SQLAlchemy the name of column and its attributes:
     id = Column(String, primary_key=True, nullable=False) 
-    name = Column(UnicodeText(100))
-    message = Column(UnicodeText(100))
-    category = Column(UnicodeText(100))
+    name = Column(String(100))
+    message = Column(String(100))
+    category = Column(String(100))
     like = Column(Integer)
     share = Column(Integer)
     comment = Column(Integer)
@@ -36,8 +36,8 @@ class Key_Data(Base):
     __tablename__ = 'KEYWORDS_DATA'
 
     #tell SQLAlchemy the name of column and its attributes:
-    id = Column(UnicodeText(100))
-    keywords = Column(UnicodeText(100), primary_key=True)
+    id = Column(String(100))
+    keywords = Column(String(100), primary_key=True)
     like = Column(Integer)
     share = Column(Integer)
     comment = Column(Integer)
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     #Create the database
     engine = create_engine('sqlite:///myData.sqlite')
-    engine.raw_connection().connection.text_factory = str
+    #engine.raw_connection().connection.text_factory = str
 
     Base.metadata.create_all(engine)
 

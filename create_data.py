@@ -56,7 +56,7 @@ def get_categories_keywords(pages):
 
 
 		if len(categories) != passes + 1:
-			categories.append(''.encode("utf-8"))
+			categories.append('others'.encode("utf-8"))
 
 		# Process temporary string by List Comprehension
 		tt = [x.strip() for x in keys.split(',')]
@@ -166,13 +166,14 @@ def calc_ctr(d):
 	else:
 		reach=0
 
-	click = 0
+	sum_clicks = 0
 
 	# Getting index to know the count of different type of clicks
 	idx = get_index_from_json(d, 'name', 'post_consumptions_by_type')
 
-	if d['insights']['data'][idx]['values'][0]['value']:
-		other_clicks = d['insights']['data'][idx]['values'][0]['value']['other clicks']
+	for clicks in d['insights']['data'][idx]['values'][0]['value']:
+		sum_clicks = float(d['insights']['data'][idx]['values'][0]['value'][clicks]) + sum_clicks
+		'''other_clicks = d['insights']['data'][idx]['values'][0]['value']['other clicks']
 		link_clicks = d['insights']['data'][idx]['values'][0]['value']['link clicks']
 		photoviews = d['insights']['data'][idx]['values'][0]['value']
 		if 'photo view' in photoviews:
@@ -186,12 +187,12 @@ def calc_ctr(d):
 		link_clicks = 0
 		photo_views = 0
 
-		click = float(other_clicks + link_clicks + photo_views)
+		click = float(other_clicks + link_clicks + photo_views)'''
 
-	if click==0 and reach==0:
+	if sum_clicks==0 and reach==0:
 		ctr =0
 	else:    
-		ctr = format((click/reach)*100, '.2f')
+		ctr = format((sum_clicks/reach)*100, '.2f')
 
 	return ctr
 
@@ -202,6 +203,8 @@ if __name__== '__main__':
 		print 'loading JSON data. . .\n'
 
 		r = requests.get('http://172.18.2.209:8090/')
+		'''with open('fb_posts.json') as f:
+			data = json.load(f)'''
 
 		data = r.json()
 
