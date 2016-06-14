@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import csv
 import sys
-
+import logging
 
 def load_data(file_name):
     csv_data = []
@@ -49,6 +49,8 @@ class Key_Data(Base):
 
 if __name__ == "__main__":
     t = time()
+
+    logging.basicConfig(filename='api.log', level=logging.DEBUG)
 
     # Create the database
     engine = create_engine('sqlite:///myData.sqlite')
@@ -121,4 +123,4 @@ if __name__ == "__main__":
 
     s.close()  # Close the connection
 
-    print "Time elapsed: " + str(time() - t) + " s."  # 0.091s
+    logging.debug("Time elapsed: " + str(time() - t) + " s.")
