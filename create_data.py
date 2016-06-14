@@ -8,6 +8,7 @@ import time
 import requests
 import os
 import unicodedata
+import logging
 
 # categories array to be fetched from the ScoopWhoop url source page of
 # each post
@@ -66,10 +67,6 @@ def get_categories_keywords(pages):
         keywords.append(tt)
 
         passes = passes + 1
-
-        print categories[passes - 1]
-
-        print "Completed " + str(passes)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
@@ -207,37 +204,44 @@ def calc_ctr(d):
 
 if __name__ == '__main__':
     while True:
-        print 'loading JSON data. . .\n'
+        logging.basicConfig(filename='api.log', level=logging.DEBUG)
 
-        r = requests.get('http://172.18.2.209:8090/')
-        '''with open('fb_posts.json') as f:
-			data = json.load(f)'''
+    	logging.debug('loading JSON data. . .\n')
 
-        data = r.json()
+	try:
+            '''r= requests.get('http://10.2.1.35:8087/')
 
-        csv_file = open('fb_posts_data.csv', 'w')
-        csv_file1 = open('keywords_data.csv', 'w')
+            data = r.json()'''
 
-        owriter = csv.writer(csv_file)
-        owriter1 = csv.writer(csv_file1)
+            with open('fb_posts.json', 'r') as f:
+                data = json.load(f)
 
-        print 'get page links. . .\n'
+            csv_file = open('fb_posts_data.csv', 'w')
+            csv_file1 = open('keywords_data.csv', 'w')
 
-        pages = get_page_links(data)
+            owriter = csv.writer(csv_file)
+            owriter1 = csv.writer(csv_file1)
 
-        print 'loading categories and keywords. . .\n'
+            logging.debug('get page links. . .\n')
 
-        get_categories_keywords(pages)
+            pages = get_page_links(data)
 
-        print 'writing into csv files. . .\n'
+            logging.debug('loading categories and keywords. . .\n')
 
-        write_into_csv(data, owriter, owriter1)
+            get_categories_keywords(pages)
 
-        print 'data loaded successfully!\n'
+            logging.debug('writing into csv files. . .\n')
 
-        csv_file.close()
-        csv_file1.close()
+            write_into_csv(data, owriter, owriter1)
 
-        os.system('python prep_data.py')
+            logging.debug('data loaded successfully!\n')
+
+            csv_file.close()
+            csv_file1.close()
+
+            os.system('python prep_data.py')
+
+        except Exception as e:
+            logging.error(str(e))
 
         time.sleep(7200)
