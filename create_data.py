@@ -209,12 +209,12 @@ if __name__ == '__main__':
     	logging.debug('loading JSON data. . .\n')
 
 	try:
-            '''r= requests.get('http://10.2.1.35:8087/')
+            r= requests.get('http://10.2.1.35:8087/')
 
-            data = r.json()'''
+            data = r.json()
 
-            with open('fb_posts.json', 'r') as f:
-                data = json.load(f)
+            '''with open('fb_posts.json', 'r') as f:
+                data = json.load(f)'''
 
             csv_file = open('fb_posts_data.csv', 'w')
             csv_file1 = open('keywords_data.csv', 'w')
