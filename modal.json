@@ -3,12 +3,42 @@
         {"name": "name", "label": "Name"},
         {"name": "category", "label": "Category"},
         {"name": "keywords", "label": "Keywords"},
-        {"name": "author", "label": "Author"}
+        {"name": "author", "label": "Author"},
+	{
+            "name": "pub_date",
+            "label": "Publish Date",
+            "info": {
+                "cv-datefilter": true,
+		"cv-datefilter-hierarchy": "daily"
+            },
+            "levels": [
+                {
+                    "name":"year",
+                    "label":"Year",
+                    "info": { "cv-datefilter-field": "year" }
+                },
+                {
+                    "name":"month",
+                    "label":"Month"
+                },
+		{
+		    "name":"day",
+		    "label":"Day"
+		}
+            ],
+            "hierarchies": [
+                {
+                    "name": "daily",
+                    "label": "Daily",
+                    "levels": [ "year", "month", "day"]
+                }
+            ]
+        }
     ],
     "cubes": [
         {
             "name": "FB_POSTS_DATA",
-            "dimensions": ["name", "category"],
+            "dimensions": ["name", "category","author", "pub_date"],
             "measures": [
                 {"name": "like", "aggregations": ["sum", "avg", "min", "max"]},
                 {"name": "share", "aggregations": [
@@ -118,7 +148,12 @@
                     "name": "record_count",
                     "function": "count"
                 }
-            ]
+            ],
+	    "mappings":{
+		"pub_date.year": "year",
+		"pub_date.month": "month",
+		"pub_date.day": "day"
+	    } 
         },
         {
             "name": "KEYWORDS_DATA",
