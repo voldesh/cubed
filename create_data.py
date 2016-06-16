@@ -171,7 +171,7 @@ def write_into_csv(data, pdata, owriter, owriter1):
 			day = 0
 			hour = 0
 			mins = 0
-			author = ''
+			author = 'Unknown'
 			head_len = 0
 
 		owriter.writerow([
@@ -313,4 +313,4 @@ if __name__== '__main__':
 		except Exception as e:
 			logging.error(str(e))
 
-		time.sleep(20)
+		time.sleep(7200)

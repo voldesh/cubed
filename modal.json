@@ -26,6 +26,14 @@
 		{
 		    "name":"day",
 		    "label":"Day"
+		},
+		{
+		    "name": "hour",
+		    "label": "Hour"
+		},
+		{
+		    "name": "mins",
+		    "label": "Minutes"
 		}
             ],
             "hierarchies": [
@@ -33,7 +41,13 @@
                     "name": "daily",
                     "label": "Daily",
                     "levels": [ "year", "month", "day"]
-                }
+                },
+
+		{
+		    "name": "hourly",
+		    "label": "Hourly",
+                    "levels": [ "hour", "mins"]
+		}
             ]
         }
     ],
@@ -152,7 +166,9 @@
 	    "mappings":{
 		"pub_date.year": "year",
 		"pub_date.month": "month",
-		"pub_date.day": "day"
+		"pub_date.day": "day",
+		"pub_date.hour": "hour",
+		"pub_date.mins": "mins"
 	    } 
         },
         {
