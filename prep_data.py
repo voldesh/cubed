@@ -53,6 +53,7 @@ class FB_Data(Base):
     no_of_images = Column(Integer)
     no_of_videos = Column(Integer)
     head_len = Column(Integer)
+    no_of_abusive_words = Column(Integer)
 
 class Key_Data(Base):
 
@@ -124,7 +125,8 @@ if __name__ == "__main__":
 				'mins': fb_data[i][13],
 				'no_of_images': fb_data[i][14],
 				'no_of_videos': fb_data[i][15],
-				'head_len': fb_data[i][16]
+				'head_len': fb_data[i][16],
+				'no_of_abusive_words' : fb_data[i][17]
                          })
 		s.add(fb_record)
 
