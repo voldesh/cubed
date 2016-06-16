@@ -5,6 +5,7 @@
         {"name": "keywords", "label": "Keywords"},
         {"name": "author", "label": "Author"},
 	{"name": "no_of_images", "label": "Number of Images"},
+	{"name": "no_of_videos", "label": "Number of Videos"},
 	{"name": "head_len", "label": "Heading Length"},
 	{
             "name": "pub_date",
@@ -54,7 +55,7 @@
     "cubes": [
         {
             "name": "FB_POSTS_DATA",
-            "dimensions": ["name", "category","author", "pub_date", "no_of_images", "head_len"],
+            "dimensions": ["name", "category", "author", "pub_date", "no_of_images", "no_of_videos", "head_len"],
             "measures": [
                 {"name": "like"},
                 {"name": "share"},
@@ -173,15 +174,12 @@
         },
         {
             "name": "KEYWORDS_DATA",
-            "dimensions": ["keywords"],
+            "dimensions": ["keywords", "pub_date"],
             "measures": [
-                    {"name": "like", "aggregations": [
-                        "sum", "avg", "min", "max"]},
-                {"name": "share", "aggregations": [
-                    "sum", "avg", "min", "max"]},
-                {"name": "comment", "aggregations": [
-                    "sum", "avg", "min", "max"]},
-                {"name": "ctr", "aggregations": ["sum", "avg", "min", "max"]}
+                    {"name": "like"},
+                {"name": "share"},
+                {"name": "comment"},
+                {"name": "ctr"}
             ],
             "aggregates": [
                 {
@@ -285,7 +283,15 @@
                     "function": "count"
                 }
 
-            ]
+            ],
+
+	    "mappings":{
+                "pub_date.year": "year",
+                "pub_date.month": "month",
+                "pub_date.day": "day",
+                "pub_date.hour": "hour",
+                "pub_date.mins": "mins"
+            }
 
         }
     ]
