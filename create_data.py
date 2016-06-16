@@ -99,7 +99,7 @@ def process_pub_date(pub_date):
 def write_into_csv(data, pdata, owriter, owriter1):
 	' Writes into two csv files data.csv and keywords_data.csv parsing the JSON data file'
 
-        owriter.writerow(['id','name','message','category', 'author', 'likes', 'shares', 'comments', 'ctr', 'year', 'month', 'day','no. of images'])
+        owriter.writerow(['id','name','message','category', 'author', 'likes', 'shares', 'comments', 'ctr', 'year', 'month', 'day','no_of_images', 'head_len'])
 	owriter1.writerow(['id', 'keywords', 'likes', 'shares', 'comments', 'ctr'])
 
 	# Key and Search Pattern to search for the index
@@ -115,6 +115,8 @@ def write_into_csv(data, pdata, owriter, owriter1):
 	
 		# Use this index value to get likes, comments and shares of each post
 	        idx = get_index_from_json(data[i], key, search_pattern)
+
+		no_of_images = 0
 
 		if 'name' in data[i].keys():
                         name = data[i]['name']
@@ -143,6 +145,7 @@ def write_into_csv(data, pdata, owriter, owriter1):
                         comment = data[i]['insights']['data'][idx]['values'][0]['value']['comment']
                 else:
                         comment = 0
+
 		if pdata[i]['status']=="1":	
 			ymdhm = process_pub_date(pdata[i]['data']['pub_date'])
 			year = ymdhm[0]
@@ -160,6 +163,8 @@ def write_into_csv(data, pdata, owriter, owriter1):
 
                 	no_of_images = len(images)
 
+			head_len = len(pdata[i]['data']['title'])
+
 		else:
 			year = 0
 			month = 0
@@ -167,6 +172,7 @@ def write_into_csv(data, pdata, owriter, owriter1):
 			hour = 0
 			mins = 0
 			author = ''
+			head_len = 0
 
 		owriter.writerow([
 				data[i]['id'],
@@ -183,7 +189,8 @@ def write_into_csv(data, pdata, owriter, owriter1):
 				day,
 				hour,
 				mins,
-				no_of_images])
+				no_of_images,
+				head_len])
 		
 		for column in xrange(len(keywords[row])):
                         owriter1.writerow([

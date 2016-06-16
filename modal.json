@@ -5,6 +5,7 @@
         {"name": "keywords", "label": "Keywords"},
         {"name": "author", "label": "Author"},
 	{"name": "no_of_images", "label": "Number of Images"},
+	{"name": "head_len", "label": "Heading Length"},
 	{
             "name": "pub_date",
             "label": "Publish Date",
@@ -39,7 +40,7 @@
     "cubes": [
         {
             "name": "FB_POSTS_DATA",
-            "dimensions": ["name", "category","author", "pub_date", "no_of_images"],
+            "dimensions": ["name", "category","author", "pub_date", "no_of_images", "head_len"],
             "measures": [
                 {"name": "like"},
                 {"name": "share"},
