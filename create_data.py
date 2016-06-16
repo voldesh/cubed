@@ -65,10 +65,6 @@ def get_data_from_post(pages):
 
 		passes = passes + 1
 
-		print categories[passes-1]
-
-		print "Completed " + str(passes)
-
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
 def get_index_from_json(data, key, value):
@@ -148,7 +144,7 @@ def write_into_csv(data, pdata, owriter, owriter1):
                         comment = data[i]['insights']['data'][idx]['values'][0]['value']['comment']
                 else:
                         comment = 0
-		if pdata[i]['status']==1:	
+		if pdata[i]['status']=="1":
 			ymdhm = process_pub_date(pdata[i]['data']['pub_date'])
 			year = ymdhm[0]
 			month = ymdhm[1]
@@ -224,6 +220,27 @@ def calc_ctr(d):
 	return ctr
 
 #---------------------------------------------------------------------------------------------------------------------------------------------#
+def process_link(tmp):
+	' Returns the stripped content from the link of the post '
+
+	tmp = tmp[26:]
+
+	lc = -1
+	for i in range(len(tmp)):
+		if i!=len(tmp)-1:
+			if tmp[i]=='/' and tmp[i+1]=='?':
+				lc = i
+				break
+
+		elif tmp[i]=='/':
+			lc = i
+
+	if lc==-1:
+		lc = len(tmp)
+
+	tmp = tmp[:lc]
+
+	return tmp
 
 if __name__== '__main__':
 	while True:
@@ -238,10 +255,15 @@ if __name__== '__main__':
 		post_data = []
 		for d in data:
 			tmp = d['link']
-			tmp = tmp[26:]
-			print tmp
-			post_r = requests.get('http://www.scoopwhoop.com/api/v1/'+tmp)
+        		if 'http://www.scoopwhoop.com' not in tmp:
+	               		post_data.append({'status':0})
+				continue
+			
+			link = process_link(tmp)
+			print link
+			post_r = requests.get('http://www.scoopwhoop.com/api/v1/'+link)
 			post_data.append(post_r.json())
+			print post_r.json()["userData"]
 
 		csv_file = open('fb_posts_data.csv','w')
 		csv_file1 = open('keywords_data.csv', 'w')
