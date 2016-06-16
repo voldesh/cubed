@@ -4,6 +4,7 @@
         {"name": "category", "label": "Category"},
         {"name": "keywords", "label": "Keywords"},
         {"name": "author", "label": "Author"},
+	{"name": "no_of_images", "label": "Number of Images"},
 	{
             "name": "pub_date",
             "label": "Publish Date",
@@ -38,14 +39,12 @@
     "cubes": [
         {
             "name": "FB_POSTS_DATA",
-            "dimensions": ["name", "category","author", "pub_date"],
+            "dimensions": ["name", "category","author", "pub_date", "no_of_images"],
             "measures": [
-                {"name": "like", "aggregations": ["sum", "avg", "min", "max"]},
-                {"name": "share", "aggregations": [
-                    "sum", "avg", "min", "max"]},
-                {"name": "comment", "aggregations": [
-                    "sum", "avg", "min", "max"]},
-                {"name": "ctr", "aggregations": ["sum", "avg", "min", "max"]}
+                {"name": "like"},
+                {"name": "share"},
+                {"name": "comment"},
+                {"name": "ctr"}
             ],
             "aggregates": [
                 {
