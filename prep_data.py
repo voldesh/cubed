@@ -1,3 +1,7 @@
+' Script to prepare data from csv to be stored in SQLite database '
+
+#!/usr/bin/env
+
 from time import time
 from datetime import datetime
 from sqlalchemy import Column, Integer, Float, String, UnicodeText, DateTime
@@ -6,8 +10,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import csv
 import sys
+import logging
+
+#---------------------------------------------------------------------------------------------------------------------------------------#
 
 def load_data(file_name):
+	' Returns a list from csv data '
 	csv_data = []
 	with open(file_name, 'rb') as f:
 		data = csv.reader(f)
@@ -15,14 +23,16 @@ def load_data(file_name):
 			csv_data.append(d)
 
 	return csv_data
+
+#---------------------------------------------------------------------------------------------------------------------------------------#
 	
 Base = declarative_base()
 
 class FB_Data(Base):
-    #Tell SQLAlchemy what the table name is and if there's any table-specific arguments it should know about
+    ' Model of data for names and categories '    
+
     __tablename__ = 'FB_POSTS_DATA'
     
-    #tell SQLAlchemy the name of column and its attributes:
     id = Column(String, primary_key=True, nullable=False) 
     name = Column(String(100))
     message = Column(String(100))
@@ -40,10 +50,14 @@ class FB_Data(Base):
     hour = Column(Integer)
     mins = Column(Integer)
 
+    no_of_images = Column(Integer)
+
 class Key_Data(Base):
+
+    ' Model of data for keywords'
+
     __tablename__ = 'KEYWORDS_DATA'
 
-    #tell SQLAlchemy the name of column and its attributes:
     id = Column(String(100))
     keywords = Column(String(100), primary_key=True)
     like = Column(Integer)
@@ -51,22 +65,26 @@ class Key_Data(Base):
     comment = Column(Integer)
     ctr = Column(Float)
 
+#---------------------------------------------------------------------------------------------------------------------------------------#
+
 if __name__ == "__main__":
     t = time()
 
-    #Create the database
+    #creating a log file
+    logging.basicConfig(filename='api.log', level=logging.DEBUG)
+
     engine = create_engine('sqlite:///myData.sqlite')
-    #engine.raw_connection().connection.text_factory = str
 
     Base.metadata.create_all(engine)
 
-    #Create the session
+    # Start of the session
     session = sessionmaker()
     session.configure(bind=engine)
     s = session()
 
     ids = []
 
+    # Prefetch existing IDs
     for dt in s.query(FB_Data):
 	ids.append(str(dt.id))
 
@@ -76,16 +94,17 @@ if __name__ == "__main__":
     fb_data = load_data(file_name1)
     key_data = load_data(file_name2)
 
-    print fb_data[0]
-
+    # Adding only those data in the original file which are not already present.
     for i in range(len(fb_data)):
 	if i>0:
 		if fb_data[i][0] not in ids:
 			ids.append(fb_data[i][0])
 		else:
+			# Pick the existing ID and delete it.
 			dat1 = s.query(FB_Data).filter_by(id=fb_data[i][0]).first()
 			s.delete(dat1)
 
+		# Add/update data
 		fb_record = FB_Data(**{
 				'id' : fb_data[i][0],
 				'name' : fb_data[i][1],
@@ -100,7 +119,8 @@ if __name__ == "__main__":
 				'month': fb_data[i][10],
 				'day': fb_data[i][11],
 				'hour': fb_data[i][12],
-				'mins': fb_data[i][13]
+				'mins': fb_data[i][13],
+				'no_of_images': fb_data[i][14]
                          })
 		s.add(fb_record)
 
@@ -109,14 +129,17 @@ if __name__ == "__main__":
     for dt in s.query(Key_Data):
         keys.append(str(dt.keywords))
 
+    # Adding only those data in the original file which are not already present.
     for i in range(len(key_data)):
 	if i>0:
 		if key_data[i][1] not in keys:
 			keys.append(key_data[i][1])
 		else:
+			# Pick the existing ID and delete it.
 			dat2 = s.query(Key_Data).filter_by(keywords=key_data[i][1]).first()
 			s.delete(dat2)
 
+		# Add/update data
 		key_record = Key_Data(**{
                                 'id' : key_data[i][0],
 				'keywords': key_data[i][1],
@@ -132,5 +155,5 @@ if __name__ == "__main__":
    
     s.close() #Close the connection
     
-    print "Time elapsed: " + str(time() - t) + " s." #0.091s
+    logging.debug("Time elapsed: " + str(time() - t) + " s.")
 
