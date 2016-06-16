@@ -8,14 +8,13 @@ import time
 import requests
 import os
 import unicodedata
+import logging
 
 # categories array to be fetched from the ScoopWhoop url source page of each post
 categories = []
 
 # 2 D array containing array of keywords of each post
 keywords = []
-
-no_of_images = []
 
 def get_page_links(data):
 	' Returns a list of ScoopWhoop page urls to be used to get categories and keywords '
@@ -33,7 +32,7 @@ def get_page_links(data):
 def get_data_from_post(pages):
 	' Fills global arrays categories[] and keywords[] from page URLs '
 
-	global categories, keywords
+	global categories, keywords, no_of_images, images
 
 	passes = 0
 
@@ -100,7 +99,7 @@ def process_pub_date(pub_date):
 def write_into_csv(data, pdata, owriter, owriter1):
 	' Writes into two csv files data.csv and keywords_data.csv parsing the JSON data file'
 
-        owriter.writerow(['id','name','message','category', 'author', 'likes', 'shares', 'comments', 'ctr', 'year', 'month', 'day'])
+        owriter.writerow(['id','name','message','category', 'author', 'likes', 'shares', 'comments', 'ctr', 'year', 'month', 'day','no. of images'])
 	owriter1.writerow(['id', 'keywords', 'likes', 'shares', 'comments', 'ctr'])
 
 	# Key and Search Pattern to search for the index
@@ -144,7 +143,7 @@ def write_into_csv(data, pdata, owriter, owriter1):
                         comment = data[i]['insights']['data'][idx]['values'][0]['value']['comment']
                 else:
                         comment = 0
-		if pdata[i]['status']=="1":
+		if pdata[i]['status']=="1":	
 			ymdhm = process_pub_date(pdata[i]['data']['pub_date'])
 			year = ymdhm[0]
 			month = ymdhm[1]
@@ -152,6 +151,15 @@ def write_into_csv(data, pdata, owriter, owriter1):
 			hour = ymdhm[3]
 			mins = ymdhm[4]
 			author = pdata[i]['userData'][0]['display_name']
+
+			source = pdata[i]["data"]['article_content']
+
+	                soup = BeautifulSoup(source, 'html.parser')
+
+        	        images = soup.find_all('img')
+
+                	no_of_images = len(images)
+
 		else:
 			year = 0
 			month = 0
@@ -174,7 +182,8 @@ def write_into_csv(data, pdata, owriter, owriter1):
 				month,
 				day,
 				hour,
-				mins])
+				mins,
+				no_of_images])
 		
 		for column in xrange(len(keywords[row])):
                         owriter1.writerow([
@@ -220,6 +229,7 @@ def calc_ctr(d):
 	return ctr
 
 #---------------------------------------------------------------------------------------------------------------------------------------------#
+
 def process_link(tmp):
 	' Returns the stripped content from the link of the post '
 
@@ -244,51 +254,56 @@ def process_link(tmp):
 
 if __name__== '__main__':
 	while True:
-		print 'loading JSON data. . .\n'
+	
+		logging.basicConfig(filename='api.log', level=logging.DEBUG)
+ 
+     		logging.debug('loading JSON data. . .\n')
+ 
+ 		try:
+	                '''r= requests.get('http://10.2.1.35:8087/')
+ 
+        	        data = r.json()'''		
 
-		#r = requests.get('http://172.18.2.209:8090/')'''
-		with open('data.json') as f:
-			data = json.load(f)
+			with open('data.json') as f:
+				data = json.load(f)
 
-		#data = r.json()
-
-		post_data = []
-		for d in data:
-			tmp = d['link']
-        		if 'http://www.scoopwhoop.com' not in tmp:
-	               		post_data.append({'status':0})
-				continue
+			post_data = []
+			for d in data:
+				tmp = d['link']
+				if 'http://www.scoopwhoop.com' not in tmp:
+		               		post_data.append({"status":"0"})
+					continue
 			
-			link = process_link(tmp)
-			print link
-			post_r = requests.get('http://www.scoopwhoop.com/api/v1/'+link)
-			post_data.append(post_r.json())
-			print post_r.json()["userData"]
+				link = process_link(tmp)
+				post_r = requests.get('http://www.scoopwhoop.com/api/v1/'+link)
+				post_data.append(post_r.json())
 
-		csv_file = open('fb_posts_data.csv','w')
-		csv_file1 = open('keywords_data.csv', 'w')
+			csv_file = open('fb_posts_data.csv','w')
+			csv_file1 = open('keywords_data.csv', 'w')
 
-		owriter = csv.writer(csv_file)
-		owriter1 = csv.writer(csv_file1)
+			owriter = csv.writer(csv_file)
+			owriter1 = csv.writer(csv_file1)
 
-		print 'get page links. . .\n'
+			logging.debug('get page links. . .\n')
 
-		pages = get_page_links(data)
+			pages = get_page_links(data)
 
-		print 'loading categories and keywords. . .\n'
+			logging.debug('loading categories and keywords. . .\n')
 
-		get_data_from_post(pages)
+			get_data_from_post(pages)
 
-		print 'writing into csv files. . .\n'
+			logging.debug('writing into csv files. . .\n')
 
-		write_into_csv(data, post_data, owriter, owriter1)
+			write_into_csv(data, post_data, owriter, owriter1)
 
-		print 'data loaded successfully!\n'
+			logging.debug('data loaded successfully!\n')
 
-		csv_file.close()
-		csv_file1.close()
+			csv_file.close()
+			csv_file1.close()
 
-		os.system('python prep_data.py')
+			os.system('python prep_data.py')
+
+		except Exception as e:
+			logging.error(str(e))
 
 		time.sleep(20)
-
