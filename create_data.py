@@ -239,6 +239,7 @@ if __name__== '__main__':
 		for d in data:
 			tmp = d['link']
 			tmp = tmp[26:]
+			print tmp
 			post_r = requests.get('http://www.scoopwhoop.com/api/v1/'+tmp)
 			post_data.append(post_r.json())
 
