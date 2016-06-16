@@ -116,8 +116,6 @@ def write_into_csv(data, pdata, owriter, owriter1):
 		# Use this index value to get likes, comments and shares of each post
 	        idx = get_index_from_json(data[i], key, search_pattern)
 
-		no_of_images = 0
-
 		if 'name' in data[i].keys():
                         name = data[i]['name']
 			name = unicodedata.normalize('NFKD', name).encode('ascii','ignore')
@@ -159,9 +157,18 @@ def write_into_csv(data, pdata, owriter, owriter1):
 
 	                soup = BeautifulSoup(source, 'html.parser')
 
+			content = soup
+			
+			if soup.table:
+				soup.table.decompose()
+
         	        images = soup.find_all('img')
 
                 	no_of_images = len(images)
+
+			videos = soup.find_all('iframe')
+
+			no_of_videos = len(videos)
 
 			head_len = len(pdata[i]['data']['title'])
 
@@ -173,6 +180,8 @@ def write_into_csv(data, pdata, owriter, owriter1):
 			mins = 0
 			author = 'Unknown'
 			head_len = 0
+			no_of_images = 0
+			no_of_videos = 0
 
 		owriter.writerow([
 				data[i]['id'],
@@ -190,6 +199,7 @@ def write_into_csv(data, pdata, owriter, owriter1):
 				hour,
 				mins,
 				no_of_images,
+				no_of_videos,
 				head_len])
 		
 		for column in xrange(len(keywords[row])):
