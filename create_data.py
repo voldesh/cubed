@@ -99,7 +99,7 @@ def process_pub_date(pub_date):
 def write_into_csv(data, pdata, owriter, owriter1):
 	' Writes into two csv files data.csv and keywords_data.csv parsing the JSON data file'
 
-        owriter.writerow(['id','name','message','category', 'author', 'likes', 'shares', 'comments', 'ctr', 'year', 'month', 'day','no_of_images', 'head_len'])
+        owriter.writerow(['id','name','message','category', 'author', 'likes', 'shares', 'comments', 'ctr', 'year', 'month', 'day','no_of_images', 'head_len', 'no_of_abusive_words'])
 	owriter1.writerow(['id', 'keywords', 'likes', 'shares', 'comments', 'ctr'])
 
 	# Key and Search Pattern to search for the index
@@ -108,6 +108,11 @@ def write_into_csv(data, pdata, owriter, owriter1):
 
         category_idx=0
 	row = 0
+
+	f1 = open('abusive.txt')
+        abusive_words = f1.read()
+        abusive_words = abusive_words.split('\n')
+        f1.close()
 
 	# Fill data.csv rows for each post
         for i in range(len(data)):
@@ -171,6 +176,18 @@ def write_into_csv(data, pdata, owriter, owriter1):
 			no_of_videos = len(videos)
 
 			head_len = len(pdata[i]['data']['title'])
+			
+			ab_words = []
+			
+			con = soup.get_text()
+                        con = con.split()
+
+                        for word in con :
+                                if word in abusive_words:
+                                        ab_words.append(word)
+
+                        no_of_abusive_words = len(ab_words)
+
 
 		else:
 			year = 0
@@ -182,6 +199,7 @@ def write_into_csv(data, pdata, owriter, owriter1):
 			head_len = 0
 			no_of_images = 0
 			no_of_videos = 0
+			no_of_abusive_words = 0
 
 		owriter.writerow([
 				data[i]['id'],
@@ -200,7 +218,8 @@ def write_into_csv(data, pdata, owriter, owriter1):
 				mins,
 				no_of_images,
 				no_of_videos,
-				head_len])
+				head_len,
+				no_of_abusive_words])
 		
 		for column in xrange(len(keywords[row])):
                         owriter1.writerow([

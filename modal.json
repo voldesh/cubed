@@ -7,6 +7,7 @@
 	{"name": "no_of_images", "label": "Number of Images"},
 	{"name": "no_of_videos", "label": "Number of Videos"},
 	{"name": "head_len", "label": "Heading Length"},
+	{"name": "no_of_abusive_words", "label": "Number of Abusive Words"}
 	{
             "name": "pub_date",
             "label": "Publish Date",
@@ -55,7 +56,7 @@
     "cubes": [
         {
             "name": "FB_POSTS_DATA",
-            "dimensions": ["name", "category", "author", "pub_date", "no_of_images", "no_of_videos", "head_len"],
+            "dimensions": ["name", "category", "author", "pub_date", "no_of_images", "no_of_videos", "head_len", "no_of_abusive_words"],
             "measures": [
                 {"name": "like"},
                 {"name": "share"},
