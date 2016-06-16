@@ -175,7 +175,7 @@
         },
         {
             "name": "KEYWORDS_DATA",
-            "dimensions": ["keywords", "pub_date"],
+            "dimensions": ["keywords"],
             "measures": [
                     {"name": "like"},
                 {"name": "share"},
