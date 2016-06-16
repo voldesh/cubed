@@ -5,6 +5,7 @@
         {"name": "keywords", "label": "Keywords"},
         {"name": "author", "label": "Author"},
 	{"name": "no_of_images", "label": "Number of Images"},
+	{"name": "head_len", "label": "Heading Length"},
 	{
             "name": "pub_date",
             "label": "Publish Date",
@@ -25,6 +26,14 @@
 		{
 		    "name":"day",
 		    "label":"Day"
+		},
+		{
+		    "name": "hour",
+		    "label": "Hour"
+		},
+		{
+		    "name": "mins",
+		    "label": "Minutes"
 		}
             ],
             "hierarchies": [
@@ -32,14 +41,20 @@
                     "name": "daily",
                     "label": "Daily",
                     "levels": [ "year", "month", "day"]
-                }
+                },
+
+		{
+		    "name": "hourly",
+		    "label": "Hourly",
+                    "levels": [ "hour", "mins"]
+		}
             ]
         }
     ],
     "cubes": [
         {
             "name": "FB_POSTS_DATA",
-            "dimensions": ["name", "category","author", "pub_date", "no_of_images"],
+            "dimensions": ["name", "category","author", "pub_date", "no_of_images", "head_len"],
             "measures": [
                 {"name": "like"},
                 {"name": "share"},
@@ -151,7 +166,9 @@
 	    "mappings":{
 		"pub_date.year": "year",
 		"pub_date.month": "month",
-		"pub_date.day": "day"
+		"pub_date.day": "day",
+		"pub_date.hour": "hour",
+		"pub_date.mins": "mins"
 	    } 
         },
         {

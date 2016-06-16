@@ -51,6 +51,7 @@ class FB_Data(Base):
     mins = Column(Integer)
 
     no_of_images = Column(Integer)
+    head_len = Column(Integer)
 
 class Key_Data(Base):
 
@@ -120,7 +121,8 @@ if __name__ == "__main__":
 				'day': fb_data[i][11],
 				'hour': fb_data[i][12],
 				'mins': fb_data[i][13],
-				'no_of_images': fb_data[i][14]
+				'no_of_images': fb_data[i][14],
+				'head_len': fb_data[i][15]
                          })
 		s.add(fb_record)
 
