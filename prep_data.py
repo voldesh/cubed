@@ -37,7 +37,6 @@ class FB_Data(Base):
 
     id = Column(String, primary_key=True, nullable=False)
     name = Column(String(100))
-    message = Column(String(100))
     category = Column(String(100))
     author = Column(String(50))
 
@@ -58,7 +57,6 @@ class FB_Data(Base):
     no_of_abusive_words = Column(Integer)
 
 class Key_Data(Base):
-
     ' Model of data for keywords'
 
     __tablename__ = 'KEYWORDS_DATA'
@@ -78,104 +76,107 @@ if __name__ == "__main__":
     # creating a log file
     logging.basicConfig(filename='api.log', level=logging.DEBUG)
 
-    engine = create_engine('sqlite:///myData.sqlite')
+    try:
+        engine = create_engine('sqlite:///myData.sqlite')
 
-    if len(sys.argv) == 2:
-        if sys.argv[1]=='alter':
-            table_name = raw_input("Enter table name: ")
-            col_name = raw_input("Enter column name: ")
-            col_type = raw_input("Enter column type: ")
-            def_val = raw_input("Enter default value: ")
+        if len(sys.argv) == 2:
+            if sys.argv[1]=='alter':
+                table_name = raw_input("Enter table name: ")
+                col_name = raw_input("Enter column name: ")
+                col_type = raw_input("Enter column type: ")
+                def_val = raw_input("Enter default value: ")
 
-            engine.execute('ALTER TABLE ' + table_name +' ADD COLUMN ' + col_name + ' ' + col_type + ' DEFAULT ' + def_val)
-            print "Column added successfully. Run 'python prep_data.py add' to add/update DB"
-            sys.exit()
+                engine.execute('ALTER TABLE ' + table_name +' ADD COLUMN ' + col_name + ' ' + col_type + ' DEFAULT ' + def_val)
+                print "Column added successfully. Run 'python prep_data.py add' to add/update DB"
+                sys.exit()
 
-        elif sys.argv[1] == 'add':
-            Base.metadata.create_all(engine)
+            elif sys.argv[1] == 'add':
+                Base.metadata.create_all(engine)
 
-            # Start of the session
-            session = sessionmaker()
-            session.configure(bind=engine)
-            s = session()
+                # Start of the session
+                session = sessionmaker()
+                session.configure(bind=engine)
+                s = session()
 
-            ids = []
+                ids = []
 
-            file_name1 = "fb_posts_data.csv"
-            file_name2 = "keywords_data.csv"
+                file_name1 = "fb_posts_data.csv"
+                file_name2 = "keywords_data.csv"
 
-            fb_data = load_data(file_name1)
-            key_data = load_data(file_name2)
+                fb_data = load_data(file_name1)
+                key_data = load_data(file_name2)
 
-            # Prefetch existing IDs
-            for dt in s.query(FB_Data):
-                ids.append(str(dt.id))
+                # Prefetch existing IDs
+                for dt in s.query(FB_Data):
+                    ids.append(str(dt.id))
 
-            # Adding only those data in the original file which are not already
-            # present.
-            for i in range(len(fb_data)):
-                if i > 0:
-                    if fb_data[i][0] not in ids:
-                        ids.append(fb_data[i][0])
-                    else:
-                        # Pick the existing ID and delete it.
-                        dat1 = s.query(FB_Data).filter_by(id=fb_data[i][0]).first()
-                        s.delete(dat1)
+                # Adding only those data in the original file which are not already
+                # present.
+                for i in range(len(fb_data)):
+                    if i > 0:
+                        if fb_data[i][0] not in ids:
+                            ids.append(fb_data[i][0])
+                        else:
+                            # Pick the existing ID and delete it.
+                            dat1 = s.query(FB_Data).filter_by(id=fb_data[i][0]).first()
+                            s.delete(dat1)
 
-                    # Add/update data
-                    fb_record = FB_Data(**{
-                    'id': fb_data[i][0],
-                    'name': fb_data[i][1],
-                    'message': fb_data[i][2],
-                    'category': fb_data[i][3],
-                    'author': fb_data[i][4],
-                    'like': fb_data[i][5],
-                    'share': fb_data[i][6],
-                    'comment': fb_data[i][7],
-                    'ctr': fb_data[i][8],
-                    'year': fb_data[i][9],
-                    'month': fb_data[i][10],
-                    'day': fb_data[i][11],
-                    'hour': fb_data[i][12],
-                    'mins': fb_data[i][13],
-                    'no_of_images': fb_data[i][14],
-                    'no_of_videos': fb_data[i][15],
-                    'head_len': fb_data[i][16],
-                    'no_of_abusive_words': fb_data[i][17]
-                    })
-                    s.add(fb_record)
+                        # Add/update data
+                        fb_record = FB_Data(**{
+                        'id': fb_data[i][0],
+                        'name': fb_data[i][1],
+                        'category': fb_data[i][2],
+                        'author': fb_data[i][3],
+                        'like': fb_data[i][4],
+                        'share': fb_data[i][5],
+                        'comment': fb_data[i][6],
+                        'ctr': fb_data[i][7],
+                        'year': fb_data[i][8],
+                        'month': fb_data[i][9],
+                        'day': fb_data[i][10],
+                        'hour': fb_data[i][11],
+                        'mins': fb_data[i][12],
+                        'no_of_images': fb_data[i][13],
+                        'no_of_videos': fb_data[i][14],
+                        'head_len': fb_data[i][15],
+                        'no_of_abusive_words': fb_data[i][16]
+                        })
+                        s.add(fb_record)
 
-            keys = []
+                keys = []
 
-            for dt in s.query(Key_Data):
-                keys.append(str(dt.keywords))
+                for dt in s.query(Key_Data):
+                    keys.append(str(dt.keywords))
 
-            # Adding only those data in the original file which are not already
-            # present.
-            for i in range(len(key_data)):
-                if i > 0:
-                    if key_data[i][1] not in keys:
-                        keys.append(key_data[i][1])
-                    else:
-                        # Pick the existing ID and delete it.
-                        dat2 = s.query(Key_Data).filter_by(
-                        keywords=key_data[i][1]).first()
-                        s.delete(dat2)
+                # Adding only those data in the original file which are not already
+                # present.
+                for i in range(len(key_data)):
+                    if i > 0:
+                        if key_data[i][1] not in keys:
+                            keys.append(key_data[i][1])
+                        else:
+                            # Pick the existing ID and delete it.
+                            dat2 = s.query(Key_Data).filter_by(
+                            keywords=key_data[i][1]).first()
+                            s.delete(dat2)
 
-                    # Add/update data
-                    key_record = Key_Data(**{
-                    'id': key_data[i][0],
-                    'keywords': key_data[i][1],
-                    'like': key_data[i][2],
-                    'share': key_data[i][3],
-                    'comment': key_data[i][4],
-                    'ctr': key_data[i][5]
-                    })
+                        # Add/update data
+                        key_record = Key_Data(**{
+                        'id': key_data[i][0],
+                        'keywords': key_data[i][1],
+                        'like': key_data[i][2],
+                        'share': key_data[i][3],
+                        'comment': key_data[i][4],
+                        'ctr': key_data[i][5]
+                        })
 
-                    s.add(key_record)
+                        s.add(key_record)
 
-            s.commit()  # Attempt to commit all the records
+                s.commit()  # Attempt to commit all the records
 
-            s.close()  # Close the connection
+                s.close()  # Close the connection
 
-    logging.debug("Time elapsed: " + str(time() - t) + " s.")
+        logging.debug("Time elapsed: " + str(time() - t) + " s.")
+
+    except Exception as e:
+        logging.error(str(e))

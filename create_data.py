@@ -10,6 +10,8 @@ import os
 import unicodedata
 import logging
 
+#---------------------------------------------------------------------------------------------------------------------------------------------#
+
 # categories array to be fetched from the ScoopWhoop url source page of
 # each post
 categories = []
@@ -17,6 +19,7 @@ categories = []
 # 2 D array containing array of keywords of each post
 keywords = []
 
+#---------------------------------------------------------------------------------------------------------------------------------------------#
 
 def get_page_links(data):
     ' Returns a list of ScoopWhoop page urls to be used to get categories and keywords '
@@ -103,150 +106,10 @@ def process_pub_date(pub_date):
 
     return ymdhm
 
+def get_author(pdata, i):
+    ' Returns author of a post '
 
-def write_into_csv(data, pdata, owriter, owriter1):
-    ' Writes into two csv files data.csv and keywords_data.csv parsing the JSON data file'
-
-    owriter.writerow(['id', 'name', 'message', 'category', 'author', 'likes', 'shares', 'comments',
-                      'ctr', 'year', 'month', 'day', 'no_of_images', 'head_len', 'no_of_abusive_words'])
-    owriter1.writerow(['id', 'keywords', 'likes', 'shares', 'comments', 'ctr'])
-
-    # Key and Search Pattern to search for the index
-    key = 'name'
-    search_pattern = "post_stories_by_action_type"
-
-    category_idx = 0
-    row = 0
-
-    f1 = open('abusive.txt')
-    abusive_words = f1.read()
-    abusive_words = abusive_words.split('\n')
-    f1.close()
-
-    # Fill data.csv rows for each post
-    for i in range(len(data)):
-        ctr = calc_ctr(data[i])
-
-        # Use this index value to get likes, comments and shares of each post
-        idx = get_index_from_json(data[i], key, search_pattern)
-
-        if 'name' in data[i].keys():
-            name = data[i]['name']
-            name = unicodedata.normalize(
-                'NFKD', name).encode('ascii', 'ignore')
-        else:
-            name = ''
-
-        if 'message' in data[i].keys():
-            message = data[i]['message']
-            message = unicodedata.normalize(
-                'NFKD', message).encode('ascii', 'ignore')
-        else:
-            message = ''
-
-        if 'like' in data[i]['insights']['data'][idx]['values'][0]['value'].keys():
-            like = data[i]['insights']['data'][
-                idx]['values'][0]['value']['like']
-        else:
-            like = 0
-
-        if 'share' in data[i]['insights']['data'][idx]['values'][0]['value'].keys():
-            share = data[i]['insights']['data'][
-                idx]['values'][0]['value']['share']
-        else:
-            share = 0
-
-        if 'comment' in data[i]['insights']['data'][idx]['values'][0]['value'].keys():
-            comment = data[i]['insights']['data'][
-                idx]['values'][0]['value']['comment']
-        else:
-            comment = 0
-
-        if pdata[i]['status'] == "1":
-            ymdhm = process_pub_date(pdata[i]['data']['pub_date'])
-            year = ymdhm[0]
-            month = ymdhm[1]
-            day = ymdhm[2]
-            hour = ymdhm[3]
-            mins = ymdhm[4]
-            author = pdata[i]['userData'][0]['display_name']
-
-            source = pdata[i]["data"]['article_content']
-
-            soup = BeautifulSoup(source, 'html.parser')
-
-            content = soup
-
-            if soup.table:
-                soup.table.decompose()
-
-            images = soup.find_all('img')
-
-            no_of_images = len(images)
-
-            videos = soup.find_all('iframe')
-
-            no_of_videos = len(videos)
-
-            head_len = len(pdata[i]['data']['title'])
-
-            ab_words = []
-
-            con = soup.get_text()
-            con = con.split()
-
-            for word in con:
-                if word in abusive_words:
-                    ab_words.append(word)
-
-            no_of_abusive_words = len(ab_words)
-
-        else:
-            year = 0
-            month = 0
-            day = 0
-            hour = 0
-            mins = 0
-            author = 'Unknown'
-            head_len = 0
-            no_of_images = 0
-            no_of_videos = 0
-            no_of_abusive_words = 0
-
-        owriter.writerow([
-            data[i]['id'],
-            name,
-            message,
-            categories[category_idx],
-            author,
-            like,
-            share,
-            comment,
-            ctr,
-            year,
-            month,
-            day,
-            hour,
-            mins,
-            no_of_images,
-            no_of_videos,
-            head_len,
-            no_of_abusive_words])
-
-        for column in xrange(len(keywords[row])):
-            owriter1.writerow([
-                data[i]['id'],
-                keywords[row][column],
-                like,
-                share,
-                comment,
-                ctr])
-
-        row = row + 1
-        category_idx = category_idx + 1
-
-#---------------------------------------------------------------------------------------------------------------------------------------------#
-
+    return pdata[i]['userData'][0]['display_name']
 
 def calc_ctr(d):
     ' Returns Click-Through Rate i.e. clicks per post reach rate '
@@ -277,8 +140,170 @@ def calc_ctr(d):
 
     return ctr
 
-#---------------------------------------------------------------------------------------------------------------------------------------------#
+def get_no_of_abusive_words(soup):
+    ' Returns number of abusive words in article content '
 
+    f1 = open('abusive.txt')
+
+    abusive_words = f1.read()
+    abusive_words = abusive_words.split('\n')
+
+    ab_words = []
+
+    con = soup.get_text()
+    con = con.split()
+
+    for word in con:
+        if word in abusive_words:
+            ab_words.append(word)
+
+    f1.close()
+
+    return len(ab_words)
+
+def get_article_content(pdata, i):
+    return pdata[i]["data"]['article_content']
+
+def get_no_of_images(soup):
+    ' Returns number of images in a post '
+
+    images = soup.find_all('img')
+
+    no_of_images = len(images)
+
+    return no_of_images
+
+def get_no_of_videos(soup):
+    ' Returns number of videos in a post '
+
+    videos = soup.find_all('iframe')
+
+    no_of_videos = len(videos)
+
+    return no_of_videos
+
+def get_heading_length(pdata, i):
+    ' Returns number of characters in the title of a post '
+
+    return len(pdata[i]['data']['title'])
+
+def write_into_csv(data, pdata, owriter, owriter1):
+    ' Writes into two csv files fb_posts_data.csv and keywords_data.csv parsing the JSON data file'
+
+    owriter.writerow(['id', 'name', 'category', 'author', 'likes', 'shares', 'comments',
+                      'ctr', 'year', 'month', 'day', 'no_of_images', 'head_len', 'no_of_abusive_words'])
+    owriter1.writerow(['id', 'keywords', 'likes', 'shares', 'comments', 'ctr'])
+
+    # Key and Search Pattern to search for the index
+    key = 'name'
+    search_pattern = "post_stories_by_action_type"
+
+    category_idx = 0
+    row = 0
+
+    # Fill data.csv rows for each post
+    for i in range(len(data)):
+        ctr = calc_ctr(data[i])
+
+        # Use this index value to get likes, comments and shares of each post
+        idx = get_index_from_json(data[i], key, search_pattern)
+
+        if 'name' in data[i].keys():
+            name = data[i]['name']
+            name = unicodedata.normalize(
+                'NFKD', name).encode('ascii', 'ignore')
+        else:
+            name = ''
+
+        if 'like' in data[i]['insights']['data'][idx]['values'][0]['value'].keys():
+            like = data[i]['insights']['data'][
+                idx]['values'][0]['value']['like']
+        else:
+            like = 0
+
+        if 'share' in data[i]['insights']['data'][idx]['values'][0]['value'].keys():
+            share = data[i]['insights']['data'][
+                idx]['values'][0]['value']['share']
+        else:
+            share = 0
+
+        if 'comment' in data[i]['insights']['data'][idx]['values'][0]['value'].keys():
+            comment = data[i]['insights']['data'][
+                idx]['values'][0]['value']['comment']
+        else:
+            comment = 0
+
+        if pdata[i]['status'] == "1":
+            ymdhm = process_pub_date(pdata[i]['data']['pub_date'])
+            year = ymdhm[0]
+            month = ymdhm[1]
+            day = ymdhm[2]
+            hour = ymdhm[3]
+            mins = ymdhm[4]
+            
+            author = get_author(pdata, i)
+
+            source = get_article_content(pdata, i)
+
+            soup = BeautifulSoup(source, 'html.parser')
+
+            content = soup
+
+            if soup.table:
+                soup.table.decompose()
+
+            no_of_images = get_no_of_images(soup)
+
+            no_of_videos = get_no_of_videos(soup)
+
+            head_len = get_heading_length(pdata, i)
+
+            no_of_abusive_words = get_no_of_abusive_words(soup)
+
+        else:
+            year = 0
+            month = 0
+            day = 0
+            hour = 0
+            mins = 0
+            author = 'Unknown'
+            head_len = 0
+            no_of_images = 0
+            no_of_videos = 0
+            no_of_abusive_words = 0
+
+        owriter.writerow([
+            data[i]['id'],
+            name,
+            categories[category_idx],
+            author,
+            like,
+            share,
+            comment,
+            ctr,
+            year,
+            month,
+            day,
+            hour,
+            mins,
+            no_of_images,
+            no_of_videos,
+            head_len,
+            no_of_abusive_words])
+
+        for column in xrange(len(keywords[row])):
+            owriter1.writerow([
+                data[i]['id'],
+                keywords[row][column],
+                like,
+                share,
+                comment,
+                ctr])
+
+        row = row + 1
+        category_idx = category_idx + 1
+
+#---------------------------------------------------------------------------------------------------------------------------------------------#
 
 def process_link(tmp):
     ' Returns the stripped content from the link of the post '
@@ -309,9 +334,11 @@ if __name__ == '__main__':
 
         logging.basicConfig(filename='api.log', level=logging.DEBUG)
 
-        logging.debug('loading JSON data. . .\n')
+        logging.debug('\nloading JSON data. . .\n')
 
         try:
+            start_time = time.time()
+
             '''r= requests.get('http://10.2.1.35:8087/')
 
             data = r.json()'''
@@ -359,6 +386,8 @@ if __name__ == '__main__':
 
             csv_file.close()
             csv_file1.close()
+
+            logging.debug('Time elapsed : ' + str(time.time() - start_time) + ' s.\n')
 
             os.system('python prep_data.py add')
 
