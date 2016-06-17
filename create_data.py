@@ -360,7 +360,7 @@ if __name__ == '__main__':
             csv_file.close()
             csv_file1.close()
 
-            os.system('python prep_data.py')
+            os.system('python prep_data.py add')
 
         except Exception as e:
             logging.error(str(e))
