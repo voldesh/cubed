@@ -90,27 +90,15 @@ if __name__ == "__main__":
 
     ids = []
 
-    print dir(FB_Data.__table__)
-
     file_name1 = "fb_posts_data.csv"
     file_name2 = "keywords_data.csv"
 
     fb_data = load_data(file_name1)
     key_data = load_data(file_name2)
-
-    s.close()
-    print "1"
-    sys.exit()
 
     # Prefetch existing IDs
     for dt in s.query(FB_Data):
         ids.append(str(dt.id))
-
-    file_name1 = "fb_posts_data.csv"
-    file_name2 = "keywords_data.csv"
-
-    fb_data = load_data(file_name1)
-    key_data = load_data(file_name2)
 
     # Adding only those data in the original file which are not already
     # present.
