@@ -9,6 +9,7 @@ import requests
 import os
 import unicodedata
 import logging
+from urlparse import urlparse
 
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
@@ -305,30 +306,6 @@ def write_into_csv(data, pdata, owriter, owriter1):
 
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
-def process_link(tmp):
-    ' Returns the stripped content from the link of the post '
-
-    tmp = tmp[26:]
-
-    lc = -1
-    for i in range(len(tmp)):
-        if i != len(tmp) - 1:
-            if tmp[i] == '/' and tmp[i + 1] == '?':
-                lc = i
-                break
-
-        elif tmp[i] == '/':
-            lc = i
-
-    if lc == -1:
-        lc = len(tmp)
-
-    tmp = tmp[:lc]
-
-    return tmp
-
-# TODO  Make 2 requests to links and get 2 json and merge and convert it to csv
-
 if __name__ == '__main__':
     while True:
 
@@ -339,27 +316,34 @@ if __name__ == '__main__':
         try:
             start_time = time.time()
 
-            '''r= requests.get('http://10.2.1.35:8087/')
+            r= requests.get('http://10.2.1.35:8087/')
 
-            data = r.json()'''
+            data = r.json()
 
-            with open('old_data.json') as f:
+            '''with open('old_data.json') as f:
                 old_dt = json.load(f)
 
             with open('data.json') as f:
                 data = json.load(f)
 
             for d in old_dt:
-                data.append(d)
+                data.append(d)'''
 
             post_data = []
             for d in data:
-                tmp = d['link']
-                if 'http://www.scoopwhoop.com' not in tmp:
+                link = d['link']
+
+		parsed_uri = urlparse( link )
+		domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+
+                if 'facebook' in domain:
                     post_data.append({"status": "0"})
                     continue
 
-                link = process_link(tmp)
+                link = parsed_uri.path
+		if link[len(link)-1] == '/':
+			link = link[:len(link)-1]
+		print link
                 post_r = requests.get(
                     'http://www.scoopwhoop.com/api/v1/' + link)
                 post_data.append(post_r.json())
