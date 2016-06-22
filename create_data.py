@@ -11,6 +11,16 @@ import unicodedata
 import logging
 from urlparse import urlparse
 
+def load_data(file_name):
+    ' Returns a list from csv data '
+    csv_data = []
+    with open(file_name, 'rb') as f:
+        data = csv.reader(f)
+        for d in data:
+            csv_data.append(d)
+
+    return csv_data
+
 #---------------------------------------------------------------------------------------------------------------------------------------------#
 
 # categories array to be fetched from the ScoopWhoop url source page of
@@ -188,11 +198,37 @@ def get_heading_length(pdata, i):
 
     return len(pdata[i]['data']['title'])
 
-def write_into_csv(data, pdata, owriter, owriter1):
+def get_ga_data(ga_data, data, i):
+    ga_data_ = []    
+
+    link = data[i]['link']
+
+    pageviews = 0
+    avgTimeOnPage = 0
+    bounceRate = 0
+
+
+    for j in xrange(1,len(ga_data)) :
+        slug = urlparse(ga_data[j][0])
+
+        if slug.path in link :
+            pageviews = pageviews + int(ga_data[j][1])
+            avgTimeOnPage = avgTimeOnPage + float(ga_data[j][3])
+            bounceRate = bounceRate + float(ga_data[j][5])
+
+    ga_data_.append(pageviews)
+    ga_data_.append(avgTimeOnPage) 
+    ga_data_.append(bounceRate)
+
+    return ga_data_
+
+
+def write_into_csv(data, pdata, owriter, owriter1, ga_data_csv):
     ' Writes into two csv files fb_posts_data.csv and keywords_data.csv parsing the JSON data file'
 
     owriter.writerow(['id', 'name', 'category', 'author', 'likes', 'shares', 'comments',
-                      'ctr', 'year', 'month', 'day', 'no_of_images', 'head_len', 'no_of_abusive_words'])
+                      'ctr', 'year', 'month', 'day', 'no_of_images', 'head_len', 'no_of_abusive_words', 
+		      'pageviews', 'avgTimeOnPage', 'bounceRate'])
     owriter1.writerow(['id', 'keywords', 'likes', 'shares', 'comments', 'ctr'])
 
     # Key and Search Pattern to search for the index
@@ -201,6 +237,8 @@ def write_into_csv(data, pdata, owriter, owriter1):
 
     category_idx = 0
     row = 0
+	
+    ga_data = load_data(ga_data_csv)
 
     # Fill data.csv rows for each post
     for i in range(len(data)):
@@ -234,6 +272,13 @@ def write_into_csv(data, pdata, owriter, owriter1):
         else:
             comment = 0
 
+	ga_data_ = get_ga_data(ga_data, data, i)
+
+	pageviews = ga_data_[0]
+	avgTimeOnPage = ga_data_[1]
+    	bounceRate = ga_data_[2]
+	
+	
         if pdata[i]['status'] == "1":
             ymdhm = process_pub_date(pdata[i]['data']['pub_date'])
             year = ymdhm[0]
@@ -271,8 +316,8 @@ def write_into_csv(data, pdata, owriter, owriter1):
             head_len = 0
             no_of_images = 0
             no_of_videos = 0
-            no_of_abusive_words = 0
-
+            no_of_abusive_words = 0	
+	   	
         owriter.writerow([
             data[i]['id'],
             name,
@@ -290,7 +335,10 @@ def write_into_csv(data, pdata, owriter, owriter1):
             no_of_images,
             no_of_videos,
             head_len,
-            no_of_abusive_words])
+            no_of_abusive_words,
+	    pageviews,
+	    avgTimeOnPage,
+	    bounceRate])
 
         for column in xrange(len(keywords[row])):
             owriter1.writerow([
@@ -316,17 +364,17 @@ if __name__ == '__main__':
         try:
             start_time = time.time()
 
-            r= requests.get('http://10.2.1.35:8087/')
+            '''r= requests.get('http://10.2.1.35:8087/')
 
-            data = r.json()
+            data = r.json()'''
 
             '''with open('old_data.json') as f:
-                old_dt = json.load(f)
+                old_dt = json.load(f)'''
 
             with open('data.json') as f:
                 data = json.load(f)
 
-            for d in old_dt:
+            '''for d in old_dt:
                 data.append(d)'''
 
             post_data = []
@@ -343,10 +391,12 @@ if __name__ == '__main__':
                 link = parsed_uri.path
 		if link[len(link)-1] == '/':
 			link = link[:len(link)-1]
-		print link
+		#print link
                 post_r = requests.get(
                     'http://www.scoopwhoop.com/api/v1/' + link)
                 post_data.append(post_r.json())
+
+            ga_data_csv = "csv_latest.csv"
 
             csv_file = open('fb_posts_data.csv', 'w')
             csv_file1 = open('keywords_data.csv', 'w')
@@ -364,7 +414,7 @@ if __name__ == '__main__':
 
             logging.debug('writing into csv files. . .\n')
 
-            write_into_csv(data, post_data, owriter, owriter1)
+            write_into_csv(data, post_data, owriter, owriter1, ga_data_csv)
 
             logging.debug('data loaded successfully!\n')
 
