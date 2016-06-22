@@ -44,6 +44,9 @@ class FB_Data(Base):
     share = Column(Integer)
     comment = Column(Integer)
     ctr = Column(Float)
+    pageviews = Column(Integer)
+    avgTimeOnPage = Column(Float)
+    bounceRate = Column(Float)
 
     year = Column(Integer)
     month = Column(Integer)
@@ -139,7 +142,10 @@ if __name__ == "__main__":
                         'no_of_images': fb_data[i][13],
                         'no_of_videos': fb_data[i][14],
                         'head_len': fb_data[i][15],
-                        'no_of_abusive_words': fb_data[i][16]
+                        'no_of_abusive_words': fb_data[i][16],
+			'pageviews': fb_data[i][17],
+			'avgTimeOnPage': fb_data[i][18],
+			'bounceRate': fb_data[i][19],
                         })
                         s.add(fb_record)
 
