@@ -263,6 +263,62 @@
                     "label": "Average Bounce Rate"
                 },
 
+		{
+                    "name": "total_uniquePageviews",
+                    "function": "sum",
+                    "measure": "bounceRate",
+                    "label": "Total Bounce Rate"
+                },
+
+                {
+                    "name": "min_uniquePageviews",
+                    "function": "min",
+                    "measure": "bounceRate",
+                    "label": "Min Bounce Rate"
+                },
+
+                {
+                    "name": "max_uniquePageviews",
+                    "function": "max",
+                    "measure": "bounceRate",
+                    "label": "Max Bounce Rate"
+                },
+
+                {
+                    "name": "avg_uniquePageviews",
+                    "function": "avg",
+                    "measure": "bounceRate",
+                    "label": "Average Bounce Rate"
+                },
+
+		{
+                    "name": "total_newusers",
+                    "function": "sum",
+                    "measure": "newUsers",
+                    "label": "Total New Users"
+                },
+
+                {
+                    "name": "min_newusers",
+                    "function": "min",
+                    "measure": "newUsers",
+                    "label": "Min New Users"
+                },
+
+                {
+                    "name": "max_newusers",
+                    "function": "max",
+                    "measure": "newUsers",
+                    "label": "Max New Users"
+                },
+
+                {
+                    "name": "avg_newusers",
+                    "function": "avg",
+                    "measure": "newUsers",
+                    "label": "Average New Users"
+                },
+
                 {
                     "name": "record_count",
                     "function": "count"
