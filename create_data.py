@@ -204,7 +204,9 @@ def get_ga_data(ga_data, data, i):
     link = data[i]['link']
 
     pageviews = 0
+    uniquePageviews = 0
     avgTimeOnPage = 0
+    newUsers = 0
     bounceRate = 0
 
 
@@ -213,11 +215,15 @@ def get_ga_data(ga_data, data, i):
 
         if slug.path in link :
             pageviews = pageviews + int(ga_data[j][1])
+	    uniquePageviews = uniquePageviews + int(ga_data[j][2])
             avgTimeOnPage = avgTimeOnPage + float(ga_data[j][3])
+	    newUsers = newUsers + int(ga_data[j][4])
             bounceRate = bounceRate + float(ga_data[j][5])
 
     ga_data_.append(pageviews)
+    ga_data_.append(uniquePageviews)
     ga_data_.append(avgTimeOnPage) 
+    ga_data_.append(newUsers)
     ga_data_.append(bounceRate)
 
     return ga_data_
@@ -228,7 +234,7 @@ def write_into_csv(data, pdata, owriter, owriter1, ga_data_csv):
 
     owriter.writerow(['id', 'name', 'category', 'author', 'likes', 'shares', 'comments',
                       'ctr', 'year', 'month', 'day', 'no_of_images', 'head_len', 'no_of_abusive_words', 
-		      'pageviews', 'avgTimeOnPage', 'bounceRate'])
+		      'pageviews', 'uniquePageviews', 'avgTimeOnPage', 'newUsers', 'bounceRate'])
     owriter1.writerow(['id', 'keywords', 'likes', 'shares', 'comments', 'ctr'])
 
     # Key and Search Pattern to search for the index
@@ -275,8 +281,10 @@ def write_into_csv(data, pdata, owriter, owriter1, ga_data_csv):
 	ga_data_ = get_ga_data(ga_data, data, i)
 
 	pageviews = ga_data_[0]
-	avgTimeOnPage = ga_data_[1]
-    	bounceRate = ga_data_[2]
+	uniquePageviews = ga_data_[1]
+	avgTimeOnPage = ga_data_[2]
+	newUsers = ga_data_[3]
+    	bounceRate = ga_data_[4]
 	
 	
         if pdata[i]['status'] == "1":
@@ -337,7 +345,9 @@ def write_into_csv(data, pdata, owriter, owriter1, ga_data_csv):
             head_len,
             no_of_abusive_words,
 	    pageviews,
+	    uniquePageviews,
 	    avgTimeOnPage,
+	    newUsers,
 	    bounceRate])
 
         for column in xrange(len(keywords[row])):

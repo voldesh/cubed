@@ -45,7 +45,9 @@ class FB_Data(Base):
     comment = Column(Integer)
     ctr = Column(Float)
     pageviews = Column(Integer)
+    uniquePageviews = Column(Integer)
     avgTimeOnPage = Column(Float)
+    newUsers = Column(Integer)
     bounceRate = Column(Float)
 
     year = Column(Integer)
@@ -144,8 +146,10 @@ if __name__ == "__main__":
                         'head_len': fb_data[i][15],
                         'no_of_abusive_words': fb_data[i][16],
 			'pageviews': fb_data[i][17],
-			'avgTimeOnPage': fb_data[i][18],
-			'bounceRate': fb_data[i][19],
+			'uniquePageviews': fb_data[i][18],
+			'avgTimeOnPage': fb_data[i][19],
+			'newUsers': fb_data[i][20],
+			'bounceRate': fb_data[i][21]
                         })
                         s.add(fb_record)
 
