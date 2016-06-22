@@ -63,7 +63,9 @@
                 {"name": "comment", "label": "Comments"},
                 {"name": "ctr", "label": "C.T.R."},
 		{"name": "pageviews", "label": "Page Views"},
-		{"name": "avgTimeOnPage", "label": "Avg Time on Page"},
+		{"name": "uniquePageviews", "label": "Unique Page Views"},
+		{"name": "avgTimeOnPage", "label": "Average Time on Page"},
+		{"name": "newUsers", "label": "New Users"},
 		{"name": "bounceRate", "label": "Bounce Rate"}
             ],
             "aggregates": [
@@ -266,29 +268,29 @@
 		{
                     "name": "total_uniquePageviews",
                     "function": "sum",
-                    "measure": "bounceRate",
-                    "label": "Total Bounce Rate"
+                    "measure": "uniquePageviews",
+                    "label": "Total Unique Page Views"
                 },
 
                 {
                     "name": "min_uniquePageviews",
                     "function": "min",
-                    "measure": "bounceRate",
-                    "label": "Min Bounce Rate"
+                    "measure": "uniquePageviews",
+                    "label": "Min Unique Page Views"
                 },
 
                 {
                     "name": "max_uniquePageviews",
                     "function": "max",
-                    "measure": "bounceRate",
-                    "label": "Max Bounce Rate"
+                    "measure": "uniquePageviews",
+                    "label": "Max Unique Page Views"
                 },
 
                 {
                     "name": "avg_uniquePageviews",
                     "function": "avg",
-                    "measure": "bounceRate",
-                    "label": "Average Bounce Rate"
+                    "measure": "uniquePageviews",
+                    "label": "Average Unique Page Views"
                 },
 
 		{
