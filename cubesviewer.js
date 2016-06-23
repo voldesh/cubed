@@ -4092,8 +4092,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	    	d.push(series);
 	    	serieCount++;
 	    });
-	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 
+	    for (var k=0; k<d[0].values.length; k++)
+	    	for (var i=0; i<d.length-1; i++)
+	    		for (var j=0; j<d.length-i-1; j++)
+				if (d[j].values[k].y > d[j+1].values[k].y){
+					var t = d[j];
+					d[j] = d[j+1];
+					d[j+1] = t;
+				}
 	    /*
 	    xticks = [];
 	    for (var i = 1; i < colNames.length; i++) {
@@ -4127,7 +4134,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 
 	        //chart.xAxis.axisLabel(xAxisLabel).showMaxMin(true).tickFormat(d3.format(',0f'));
 	        chart.xAxis.axisLabel(xAxisLabel);
-
+		
 	        //chart.yAxis.tickFormat(d3.format(',.2f'));
 	        chart.yAxis.tickFormat(function(d,i) {
 	        	return colFormatter(d);
@@ -4250,7 +4257,15 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	    	d.push(series);
 	    	serieCount++;
 	    });
-	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+	    
+   	    for (var k=0; k<d[0].values.length; k++)
+	    	for (var i=0; i<d.length-1; i++)
+	    		for (var j=0; j<d.length-i-1; j++)
+				if (d[j].values[k].y > d[j+1].values[k].y){
+					var t = d[j];
+					d[j] = d[j+1];
+					d[j+1] = t;
+				}
 
 	    /*
 	    xticks = [];
@@ -4420,9 +4435,17 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	    	d.push(series);
 	    	serieCount++;
 	    });
-	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+		
+	    for (var k=0; k<d[0].values.length; k++)
+	    	for (var i=0; i<d.length-1; i++)
+	    		for (var j=0; j<d.length-i-1; j++)
+				if (d[j].values[k].y > d[j+1].values[k].y){
+					var t = d[j];
+					d[j] = d[j+1];
+					d[j+1] = t;
+				}
 
-	    /*
+	    /*	
 	    xticks = [];
 	    for (var i = 1; i < colNames.length; i++) {
     		xticks.push([ i, colNames[i] ]);
@@ -4824,6 +4847,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartRadarContro
 	    	}
 	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : view.params.yaxis });
 	    });
+		//console.log(d);
 	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
 
 	    var xticks = [];
