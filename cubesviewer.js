@@ -4081,7 +4081,16 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	    	var serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		var value = e[columnDefs[i].name];
-	    		serie.push( { "x": columnDefs[i].name, "y":  (value != undefined) ? value : 0 } );
+			var label = "";
+			
+			for (var j=0; j<view.cube.aggregates.length; j++){
+				if (((view.cube.aggregates[j].name).localeCompare(columnDefs[i].name))==0) {
+					label += view.cube.aggregates[j].label;
+					break;
+				}
+			}
+
+	    		serie.push( { "x": label, "y":  (value != undefined) ? value : 0 } );
 	    	}
 	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
 	    	if (view.params["chart-disabledseries"]) {
@@ -7091,11 +7100,11 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "          <!-- <div class=\"divider\"></div>  -->\n" +
     "\n" +
-    "          <!--\n" +
+    "          \n" +
     "          <li><a href=\"\"><i class=\"fa fa-fw fa-dot-circle-o\"></i> Bubbles</a></li>\n" +
     "          <li><a href=\"\"><i class=\"fa fa-fw fa-square\"></i> Treemap</a></li>\n" +
     "          <li ng-click=\"selectChartType('sunburst')\"><a href=\"\"><i class=\"fa fa-fw fa-sun-o\"></i> Sunburst</a></li>\n" +
-    "          -->\n" +
+    "          \n" +
     "\n" +
     "          <!--\n" +
     "          <div class=\"divider\"></div>\n" +
