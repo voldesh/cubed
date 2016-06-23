@@ -11,9 +11,9 @@
 	{
             "name": "pub_date",
             "label": "Publish Date",
+	    "role" : "time",
             "info": {
-                "cv-datefilter": true,
-		"cv-datefilter-hierarchy": "daily"
+                "cv-datefilter": true
             },
             "levels": [
                 {
@@ -23,11 +23,13 @@
                 },
                 {
                     "name":"month",
-                    "label":"Month"
+                    "label":"Month",
+		    "info": { "cv-datefilter-field": "month" }
                 },
 		{
 		    "name":"day",
-		    "label":"Day"
+		    "label":"Day",
+		    "info": { "cv-datefilter-field": "day" }
 		},
 		{
 		    "name": "hour",
