@@ -209,11 +209,16 @@ def get_ga_data(ga_data, data, i):
     newUsers = 0
     bounceRate = 0
 
-
+    c = 0
     for j in xrange(1,len(ga_data)) :
         slug = urlparse(ga_data[j][0])
 
-        if slug.path in link :
+	path = slug.path.strip('/')
+
+        if path in link and path!='':
+	    c = c + 1
+	    if c==1:
+	    	print path
             pageviews = pageviews + int(ga_data[j][1])
 	    uniquePageviews = uniquePageviews + int(ga_data[j][2])
             avgTimeOnPage = avgTimeOnPage + float(ga_data[j][3])
@@ -381,7 +386,7 @@ if __name__ == '__main__':
             '''with open('old_data.json') as f:
                 old_dt = json.load(f)'''
 
-            with open('data.json') as f:
+            with open('data1.json') as f:
                 data = json.load(f)
 
             '''for d in old_dt:
