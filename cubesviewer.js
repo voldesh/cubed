@@ -4150,7 +4150,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 		
 	        //chart.yAxis.tickFormat(d3.format(',.2f'));
 	        chart.yAxis.tickFormat(function(d,i) {
-	        	return colFormatter(d);
+	        	var v;
+			if(d%1==0)
+				v = d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+			else
+				v = (Math.floor(d)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + (d%1).toString().slice(2,4);
+			return v;
 	        });
 
 	        d3.select(container)
@@ -4496,7 +4501,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 				    });
 
 	    		chart.yAxis.tickFormat(function(d,i) {
-		        	return colFormatter(d);
+		        	var v;
+				if(d%1==0)
+					v = d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+				else
+					v = (Math.floor(d)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + (d%1).toString().slice(2,4);
+				return v;
 		        });
 
 		    	d3.select(container)
@@ -4542,7 +4552,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 			      });
 
 	    	  chart.yAxis.tickFormat(function(d,i) {
-	    		  return colFormatter(d);
+			var v;
+			if(d%1==0)
+				v = d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+			else
+				v = (Math.floor(d)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + (d%1).toString().slice(2,4);	    		  
+			return v;
 	    	  });
 
 	    	  d3.select(container)

@@ -569,7 +569,13 @@ nv.models.tooltip = function() {
     };
 
     var formatValue = function(d){
-	return d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	var v;
+	if(d%1==0)
+		v = d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	else
+		v = (Math.floor(d)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + (d%1).toString().slice(2,4);
+
+	return v;
     }
 
     // Format function for the tooltip header value.
@@ -1592,8 +1598,9 @@ nv.utils.arrayEquals = function (array1, array2) {
             var gEnter = wrapEnter.append('g');
             var g = wrap.select('g');
 
-            if (ticks !== null)
+            if (ticks !== null){
                 axis.ticks(ticks);
+	    }
             else if (axis.orient() == 'top' || axis.orient() == 'bottom')
                 axis.ticks(Math.abs(scale.range()[1] - scale.range()[0]) / 100);
 
@@ -1645,7 +1652,11 @@ nv.utils.arrayEquals = function (array1, array2) {
                             .attr('y', -axis.tickPadding())
                             .attr('text-anchor', 'middle')
                             .text(function(d,i) {
-                                var v = d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                var v;
+				if(d%1==0)
+					v = d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+				else
+					v = (Math.floor(d)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + (d%1).toString().slice(2,4);
                                 return ('' + v).match('NaN') ? '' : v;
                             });
                         axisMaxMin.watchTransition(renderWatch, 'min-max top')
@@ -1718,8 +1729,11 @@ nv.utils.arrayEquals = function (array1, array2) {
                             .attr('transform', rotateLabelsRule)
                             .style('text-anchor', rotateLabels ? (rotateLabels%360 > 0 ? 'start' : 'end') : 'middle')
                             .text(function(d,i) {
-				console.log(d);
-                                var v = d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+				var v;
+				if(d%1==0)
+					v = d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+				else
+					v = (Math.floor(d)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + (d%1).toString().slice(2,4);
                                 return ('' + v).match('NaN') ? '' : v;
                             });
                         axisMaxMin.watchTransition(renderWatch, 'min-max bottom')
@@ -1754,7 +1768,11 @@ nv.utils.arrayEquals = function (array1, array2) {
                             .attr('x', axis.tickPadding())
                             .style('text-anchor', 'start')
                             .text(function(d, i) {
-                                var v = d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                var v;
+				if(d%1==0)
+					v = d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+				else
+					v = (Math.floor(d)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + (d%1).toString().slice(2,4);
                                 return ('' + v).match('NaN') ? '' : v;
                             });
                         axisMaxMin.watchTransition(renderWatch, 'min-max right')
@@ -1798,7 +1816,11 @@ nv.utils.arrayEquals = function (array1, array2) {
                             .attr('x', -axis.tickPadding())
                             .attr('text-anchor', 'end')
                             .text(function(d,i) {
-                                var v = d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                var v;
+				if(d%1==0)
+					v = d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+				else
+					v = (Math.floor(d)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + (d%1).toString().slice(2,4);
                                 return ('' + v).match('NaN') ? '' : v;
                             });
                         axisMaxMin.watchTransition(renderWatch, 'min-max right')
@@ -3421,7 +3443,7 @@ nv.models.cumulativeLineChart = function() {
                     .attr('x', availableWidth / 2)
                     .attr('y', '-.71em')
                     .style('text-anchor', 'end')
-                    .text(tempDisabled.map(function(d) { console.log(d); return d.key }).join(', ') + ' values cannot be calculated for this time period.');
+                    .text(tempDisabled.map(function(d) { return d.key }).join(', ') + ' values cannot be calculated for this time period.');
             }
 
             //Set up interactive layer
