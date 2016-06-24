@@ -4082,15 +4082,19 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		var value = e[columnDefs[i].name];
 			var label = "";
-			
-			for (var j=0; j<view.cube.aggregates.length; j++){
-				if (((view.cube.aggregates[j].name).localeCompare(columnDefs[i].name))==0) {
-					label += view.cube.aggregates[j].label;
-					break;
+			if(columnDefs.length > 2)
+				label += columnDefs[i].name;
+			else
+				for (var j=0; j<view.cube.aggregates.length; j++){
+					if (((view.cube.aggregates[j].name).localeCompare(columnDefs[i].name))==0) {
+						label += view.cube.aggregates[j].label;
+						break;
+					}
 				}
-			}
-
-	    		serie.push( { "x": label, "y":  (value != undefined) ? value : 0 } );
+			
+					    			
+			serie.push( {"x": label, "y":  (value != undefined) ? value : 0 } );
+			
 	    	}
 	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
 	    	if (view.params["chart-disabledseries"]) {
@@ -4251,7 +4255,19 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsHorizon
 	    		// If second serie is reversed
 	    		if (dataRows.length == 2 && serieCount == 1 && view.params.chartoptions.mirrorSerie2) value = (value != undefined) ? -value : 0;
 
-	    		serie.push( { "x": columnDefs[i].name, "y":  (value != undefined) ? value : 0 } );
+	    		var label = "";
+			if(columnDefs.length > 2)
+				label += columnDefs[i].name;
+			else
+				for (var j=0; j<view.cube.aggregates.length; j++){
+					if (((view.cube.aggregates[j].name).localeCompare(columnDefs[i].name))==0) {
+						label += view.cube.aggregates[j].label;
+						break;
+					}
+				}
+			
+					    			
+			serie.push( {"x": label, "y":  (value != undefined) ? value : 0 } );
 	    	}
 
 	    	// Reverse horizontal dimension to make series start from the base
