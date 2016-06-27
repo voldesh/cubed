@@ -109,11 +109,11 @@ def process_pub_date(pub_date):
     ' Returns a list containing year month day hour mins extracted from a string of published date'
 
     ymdhm = []
-    ymdhm.append(int(pub_date[8:12]))
-    ymdhm.append(get_int_month(pub_date[0:3]))
-    ymdhm.append(int(pub_date[4:6]))
-    ymdhm.append(int(pub_date[16:18]))
-    ymdhm.append(int(pub_date[19:21]))
+    ymdhm.append(int(pub_date[0:4]))
+    ymdhm.append(get_int_month(pub_date[5:7]))
+    ymdhm.append(int(pub_date[8:10]))
+    ymdhm.append(int(pub_date[11:13]))
+    ymdhm.append(int(pub_date[14:16]))
 
     return ymdhm
 
@@ -202,12 +202,16 @@ def get_ga_data(ga_data, data, i):
     ga_data_ = []    
 
     link = data[i]['link']
+    link = urlparse(link).path.strip('/')
 
     pageviews = 0
     uniquePageviews = 0
     avgTimeOnPage = 0
     newUsers = 0
     bounceRate = 0
+
+    print i
+    print link
 
     c = 0
     for j in xrange(1,len(ga_data)) :
@@ -291,15 +295,15 @@ def write_into_csv(data, pdata, owriter, owriter1, ga_data_csv):
 	newUsers = ga_data_[3]
     	bounceRate = ga_data_[4]
 	
+	ymdhm = process_pub_date(data[i]['created_time'])
+        year = ymdhm[0]
+        month = ymdhm[1]
+        day = ymdhm[2]
+        hour = ymdhm[3]
+        mins = ymdhm[4]
 	
         if pdata[i]['status'] == "1":
-            ymdhm = process_pub_date(pdata[i]['data']['pub_date'])
-            year = ymdhm[0]
-            month = ymdhm[1]
-            day = ymdhm[2]
-            hour = ymdhm[3]
-            mins = ymdhm[4]
-            
+                        
             author = get_author(pdata, i)
 
             source = get_article_content(pdata, i)
@@ -320,11 +324,6 @@ def write_into_csv(data, pdata, owriter, owriter1, ga_data_csv):
             no_of_abusive_words = get_no_of_abusive_words(soup)
 
         else:
-            year = 0
-            month = 0
-            day = 0
-            hour = 0
-            mins = 0
             author = 'Unknown'
             head_len = 0
             no_of_images = 0
