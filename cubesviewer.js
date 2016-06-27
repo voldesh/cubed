@@ -1070,6 +1070,7 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 	 */
 	this.connect = function() {
 		// Initialize Cubes client library
+		console.log(cvOptions);
 		this.cubesserver = new cubes.Server(cubesService._cubesAjaxHandler);
 		console.debug("Cubes client connecting to: " + cvOptions.cubesUrl);
 		this.cubesserver.connect (cvOptions.cubesUrl, function() {
@@ -1216,6 +1217,9 @@ angular.module('cv.cubes').service("cubesService", ['$rootScope', '$log', 'cvOpt
 			var datefilterval = cubesService.datefilterValue(view, e);
 			if (datefilterval != null) {
 				cuts.push(cubes.cut_from_string(view.cube, e.dimension + ":" + datefilterval));
+				console.log(e.dimension);
+				console.log(cuts);
+//				console.log(cubes.cut_from_string(view.cube, ));
 			}
 		});
 
@@ -2142,6 +2146,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 		//console.debug(data);
 		$scope.view.requestFailed = false;
 		$scope.view.resultLimitHit = false;
+
 		if ( ("cells" in data && data.cells.length >= cubesService.cubesserver.info.json_record_limit) ||
 		     (data.length && data.length >= cubesService.cubesserver.info.json_record_limit) ) {
 			$scope.view.resultLimitHit = true;
@@ -4069,7 +4074,7 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 		var view = $scope.view;
 		var dataRows = $scope.view.grid.data;
 		var columnDefs = view.grid.columnDefs;
-
+		
 		var container = $($element).find("svg").get(0);
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.dimensionParts(view.params.xaxis).label : "None")
 
@@ -4114,6 +4119,24 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 					d[j] = d[j+1];
 					d[j+1] = t;
 				}
+	    var m = [];
+	    if (view.params.drilldown[0].localeCompare("name") == 0 ){
+		if (view.params.yaxis.localeCompare("max_likes") == 0){	
+			if (d.length > 25)
+				for (var i=d.length-1; i>d.length-1-25; i--){
+					m.push(d[i]);
+				}
+		}
+		else if (view.params.yaxis.localeCompare("min_likes") == 0) {
+			if (d.length > 25)
+				for (var i=0; i<25; i++){
+					m.push(d[i]);
+				}
+		}
+	    }
+
+	    d = m;
+		console.log(d);
 	    /*
 	    xticks = [];
 	    for (var i = 1; i < colNames.length; i++) {
@@ -4445,10 +4468,12 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartLinesContro
 	    var numRows = dataRows.length;
 	    var serieCount = 0;
 	    $(dataRows).each(function(idx, e) {
+		//console.log(e);
 	    	var serie = [];
 	    	for (var i = 1; i < columnDefs.length; i++) {
 	    		if (columnDefs[i].field in e) {
 	    			var value = e[columnDefs[i].field];
+				
 	    			serie.push( { "x": i, "y":  (value != undefined) ? value : 0 } );
 	    		} else  {
 	    			if (view.params.charttype == "lines-stacked") {
@@ -6318,7 +6343,8 @@ angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', 
 	for(var i=0; i<reststoreService.savedViews.length; i++){
 		reststoreService.viewIds.push(reststoreService.savedViews[i].id);
 	}
-	reststoreService.showAllSavedView();
+	if (cvOptions.savedView[0] == 1)
+		reststoreService.showAllSavedView();
     };
 
     reststoreService.isViewChanged = function(view) {
@@ -6387,7 +6413,6 @@ angular.module('cv.studio').service("reststoreService", ['$rootScope', '$http', 
     };
 
     reststoreService.initialize();
-
 }]);
 
 ;/*
@@ -6711,6 +6736,7 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "            <!-- <li ng-show=\"true\" class=\"disabled\"><a>Loading...</a></li>  -->\n" +
     "            <li ng-repeat=\"sv in reststoreService.savedViews | orderBy:'sv.name'\" ng-if=\"sv.shared && sv.owner != cvOptions.user\" ng-click=\"reststoreService.addSavedView(sv.id)\"><a style=\"max-width: 360px; overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\"><i class=\"fa fa-fw\"></i> {{ sv.name }}</a></li>\n" +
     "\n" +	
+	"\n" +	"<li class=\"ng-scope\" ng-click=\"reststoreService.showAllSavedView()\"><a style=\"max-width: 360px; overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;\"><i class=\"fa fa-fw\"></i>Close All</a></li>\n" +
     "          </ul>\n" +
     "        </div>\n" +
     "\n" +
@@ -7081,6 +7107,15 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "    </li>\n" +
     "     -->\n" +
     "\n" +
+    "    <li class=\"dropdown-submenu\">\n" +
+    "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-calendar\"></i> Num of Records filter</a>\n" +
+    "        <ul class=\"dropdown-menu\">\n" +
+    "\n" +		"<li>" +
+	"\n" +			"Last 25" +
+	"			</li>" +
+    "        </ul>\n" +
+    "    </li>\n" +
+	"\n" +
     "    <div class=\"divider\"></div>\n" +
     "\n" +
     "    <li ng-class=\"{ 'disabled': view.params.cuts.length == 0 && view.params.datefilters.length == 0 }\" ng-click=\"clearFilters()\"><a href=\"\"><i class=\"fa fa-fw fa-trash\"></i> Clear filters</a></li>\n" +
