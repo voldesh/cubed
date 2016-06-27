@@ -29,38 +29,6 @@ def load_data(file_name):
 
 Base = declarative_base()
 
-class Latest_25(Base):
-    ' Model of data for names and categories '
-
-    __tablename__ = 'LATEST_25_POSTS'
-
-    id = Column(String, primary_key=True, nullable=False)
-    name = Column(String(100))
-    category = Column(String(100))
-    author = Column(String(50))
-
-    like = Column(Integer)
-    share = Column(Integer)
-    comment = Column(Integer)
-    ctr = Column(Float)
-    pageviews = Column(Integer)
-    uniquePageviews = Column(Integer)
-    avgTimeOnPage = Column(Float)
-    newUsers = Column(Integer)
-    bounceRate = Column(Float)
-
-    year = Column(Integer)
-    month = Column(Integer)
-    day = Column(Integer)
-    hour = Column(Integer)
-    mins = Column(Integer)
-
-    no_of_images = Column(Integer)
-    no_of_videos = Column(Integer)
-    head_len = Column(Integer)
-    no_of_abusive_words = Column(Integer)
-
-
 class FB_Data(Base):
     ' Model of data for names and categories '
 
@@ -213,44 +181,7 @@ if __name__ == "__main__":
 
                         s.add(key_record)
 
-		s.commit()
-
-		new_object =  engine.execute('SELECT * FROM FB_POSTS_DATA WHERE year!=0 order by year,month,day,hour,mins')
-		latest_25_posts = new_object.fetchall()[:5]
-
-		print latest_25_posts[0]
-
-		engine.execute('DELETE FROM LATEST_25_POSTS WHERE 1')
-	
-		for i in range(len(latest_25_posts)): 
-
-                    latest_25_record = Latest_25(**{
-                        'id': latest_25_posts[i][0],
-			'name':latest_25_posts[i][1],
-                        'category': latest_25_posts[i][2],
-                        'author': latest_25_posts[i][3],
-                        'like': latest_25_posts[i][4],
-                        'share': latest_25_posts[i][5],
-                        'comment': latest_25_posts[i][6],
-                        'ctr': latest_25_posts[i][7],
-                        'year': latest_25_posts[i][13],
-                        'month': latest_25_posts[i][14],
-                        'day': latest_25_posts[i][15],
-                        'hour': latest_25_posts[i][16],
-                        'mins': latest_25_posts[i][17],
-                        'no_of_images': latest_25_posts[i][18],
-                        'no_of_videos': latest_25_posts[i][19],
-                        'head_len': latest_25_posts[i][20],
-                        'no_of_abusive_words': latest_25_posts[i][21],
-                        'pageviews': latest_25_posts[i][8],
-                        'uniquePageviews': latest_25_posts[i][9],
-                        'avgTimeOnPage': latest_25_posts[i][10],
-                        'newUsers': latest_25_posts[i][11],
-                        'bounceRate': latest_25_posts[i][12]
-		    }) 
-	
-		    s.add(latest_25_record)
-                      
+              
                 s.commit()  # Attempt to commit all the records
 
                 s.close()  # Close the connection
