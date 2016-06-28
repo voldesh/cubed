@@ -11,6 +11,7 @@ from sqlalchemy.orm import sessionmaker
 import csv
 import sys
 import logging
+import os
 
 #---------------------------------------------------------------------------------------------------------------------------------------#
 
@@ -185,7 +186,7 @@ if __name__ == "__main__":
                 s.commit()  # Attempt to commit all the records
 
                 s.close()  # Close the connection
-
+	os.system('cp myData.sqlite ../cubesviewer-server/cvapp/cubesviewer/views/')
         logging.debug("Time elapsed: " + str(time() - t) + " s.")
 
     except Exception as e:

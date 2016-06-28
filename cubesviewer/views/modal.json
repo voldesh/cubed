@@ -1,0 +1,742 @@
+{
+    "dimensions": [
+        {"name": "name", "label": "Name"},
+        {"name": "category", "label": "Category"},
+        {"name": "keywords", "label": "Keywords"},
+        {"name": "author", "label": "Author"},
+	{"name": "no_of_images", "label": "Number of Images"},
+	{"name": "no_of_videos", "label": "Number of Videos"},
+	{"name": "head_len", "label": "Heading Length"},
+	{"name": "no_of_abusive_words", "label": "Number of Abusive Words"},
+	{
+            "name": "pub_date",
+            "label": "Publish Date",
+	    "role" : "time",
+            "info": {
+                "cv-datefilter": true
+            },
+            "levels": [
+                {
+                    "name":"year",
+                    "label":"Year",
+                    "info": { "cv-datefilter-field": "year" }
+                },
+                {
+                    "name":"month",
+                    "label":"Month",
+		    "info": { "cv-datefilter-field": "month" }
+                },
+		{
+		    "name":"day",
+		    "label":"Day",
+		    "info": { "cv-datefilter-field": "day" }
+		},
+		{
+		    "name": "hour",
+		    "label": "Hour"
+		},
+		{
+		    "name": "mins",
+		    "label": "Minutes"
+		}
+            ],
+            "hierarchies": [
+                {
+                    "name": "daily",
+                    "label": "Daily",
+                    "levels": [ "year", "month", "day"]
+                },
+
+		{
+		    "name": "hourly",
+		    "label": "Hourly",
+                    "levels": [ "hour", "mins"]
+		}
+            ]
+        }
+    ],
+    "cubes": [
+        {
+            "name": "FB_POSTS_DATA",
+            "dimensions": ["name", "category", "author", "pub_date", "no_of_images", "no_of_videos", "head_len", "no_of_abusive_words"],
+            "measures": [
+                {"name": "like", "label": "Likes"},
+                {"name": "share", "label": "Shares"},
+                {"name": "comment", "label": "Comments"},
+                {"name": "ctr", "label": "C.T.R."},
+		{"name": "pageviews", "label": "Page Views"},
+		{"name": "uniquePageviews", "label": "Unique Page Views"},
+		{"name": "avgTimeOnPage", "label": "Average Time on Page"},
+		{"name": "newUsers", "label": "New Users"},
+		{"name": "bounceRate", "label": "Bounce Rate"}
+            ],
+            "aggregates": [
+                {
+                    "name": "total_likes",
+                    "function": "sum",
+                    "measure": "like",
+		    "label": "Total Likes"
+                },
+
+                {
+                    "name": "total_shares",
+                    "function": "sum",
+                    "measure": "share",
+                    "label": "Total Shares"
+                },
+
+                {
+                    "name": "min_likes",
+                    "function": "min",
+                    "measure": "like",
+                    "label": "Min Likes"
+                },
+
+                {
+                    "name": "min_shares",
+                    "function": "min",
+                    "measure": "share",
+                    "label": "Min Shares"
+                },
+
+                {
+                    "name": "max_likes",
+                    "function": "max",
+                    "measure": "like",
+                    "label": "Max Likes"
+                },
+
+                {
+                    "name": "max_shares",
+                    "function": "max",
+                    "measure": "share",
+                    "label": "Max Shares"
+                },
+
+                {
+                    "name": "avg_likes",
+                    "function": "avg",
+                    "measure": "like",
+                    "label": "Average Likes"
+                },
+
+                {
+                    "name": "avg_shares",
+                    "function": "avg",
+                    "measure": "share",
+                    "label": "Average Shares"
+                },
+
+                {
+                    "name": "total_comments",
+                    "function": "sum",
+                    "measure": "comment",
+                    "label": "Total Comments"
+                },
+
+                {
+                    "name": "total_ctr",
+                    "function": "sum",
+                    "measure": "ctr",
+                    "label": "Total CTR"
+                },
+
+                {
+                    "name": "min_comments",
+                    "function": "min",
+                    "measure": "comment",
+                    "label": "Min Comments"
+                },
+
+                {
+                    "name": "min_ctr",
+                    "function": "min",
+                    "measure": "ctr",
+                    "label": "Min CTR"
+                },
+
+                {
+                    "name": "max_comments",
+                    "function": "max",
+                    "measure": "comment",
+                    "label": "Max Comments"
+                },
+
+                {
+                    "name": "max_ctr",
+                    "function": "max",
+                    "measure": "ctr",
+                    "label": "Max CTR"
+                },
+
+                {
+                    "name": "avg_comments",
+                    "function": "avg",
+                    "measure": "comment",
+                    "label": "Average Comments"
+                },
+
+                {
+                    "name": "avg_ctr",
+                    "function": "avg",
+                    "measure": "ctr",
+                    "label": "Average CTR"
+                },
+
+		{
+                    "name": "total_pageviews",
+                    "function": "sum",
+                    "measure": "pageviews",
+                    "label": "Total Page Views"
+                },
+
+                {
+                    "name": "total_timeOnPage",
+                    "function": "sum",
+                    "measure": "avgTimeOnPage",
+                    "label": "Total Time On Page"
+                },
+
+                {
+                    "name": "min_pageviews",
+                    "function": "min",
+                    "measure": "pageviews",
+                    "label": "Min Page Views"
+                },
+
+                {
+                    "name": "min_timeOnPage",
+                    "function": "min",
+                    "measure": "avgTimeOnPage",
+                    "label": "Min Time On Page"
+                },
+
+                {
+                    "name": "max_pageviews",
+                    "function": "max",
+                    "measure": "pageviews",
+                    "label": "Max Page Views"
+                },
+
+                {
+                    "name": "max_timeOnPage",
+                    "function": "max",
+                    "measure": "avgTimeOnPage",
+		    "label": "Max Time On Page"
+		},
+
+		{
+                    "name": "avg_pageviews",
+                    "function": "avg",
+                    "measure": "pageviews",
+                    "label": "Average Page Views"
+                },
+
+                {
+                    "name": "avg_avgTimeOnPage",
+                    "function": "avg",
+                    "measure": "avgTimeOnPage",
+                    "label": "Average Time On Page"
+                },
+
+		{
+                    "name": "total_bouncerate",
+                    "function": "sum",
+                    "measure": "bounceRate",
+                    "label": "Total Bounce Rate"
+                },
+
+		{
+                    "name": "min_bouncerate",
+                    "function": "min",
+                    "measure": "bounceRate",
+                    "label": "Min Bounce Rate"
+                },
+
+		{
+                    "name": "max_bouncerate",
+                    "function": "max",
+                    "measure": "bounceRate",
+                    "label": "Max Bounce Rate"
+                },
+
+		{
+                    "name": "avg_bouncerate",
+                    "function": "avg",
+                    "measure": "bounceRate",
+                    "label": "Average Bounce Rate"
+                },
+
+		{
+                    "name": "total_uniquePageviews",
+                    "function": "sum",
+                    "measure": "uniquePageviews",
+                    "label": "Total Unique Page Views"
+                },
+
+                {
+                    "name": "min_uniquePageviews",
+                    "function": "min",
+                    "measure": "uniquePageviews",
+                    "label": "Min Unique Page Views"
+                },
+
+                {
+                    "name": "max_uniquePageviews",
+                    "function": "max",
+                    "measure": "uniquePageviews",
+                    "label": "Max Unique Page Views"
+                },
+
+                {
+                    "name": "avg_uniquePageviews",
+                    "function": "avg",
+                    "measure": "uniquePageviews",
+                    "label": "Average Unique Page Views"
+                },
+
+		{
+                    "name": "total_newusers",
+                    "function": "sum",
+                    "measure": "newUsers",
+                    "label": "Total New Users"
+                },
+
+                {
+                    "name": "min_newusers",
+                    "function": "min",
+                    "measure": "newUsers",
+                    "label": "Min New Users"
+                },
+
+                {
+                    "name": "max_newusers",
+                    "function": "max",
+                    "measure": "newUsers",
+                    "label": "Max New Users"
+                },
+
+                {
+                    "name": "avg_newusers",
+                    "function": "avg",
+                    "measure": "newUsers",
+                    "label": "Average New Users"
+                },
+
+                {
+                    "name": "record_count",
+                    "function": "count"
+                }
+            ],
+	    "mappings":{
+		"pub_date.year": "year",
+		"pub_date.month": "month",
+		"pub_date.day": "day",
+		"pub_date.hour": "hour",
+		"pub_date.mins": "mins"
+	    } 
+        },
+        {
+            "name": "KEYWORDS_DATA",
+            "dimensions": ["keywords"],
+            "measures": [
+                    {"name": "like"},
+                {"name": "share"},
+                {"name": "comment"},
+                {"name": "ctr"}
+            ],
+            "aggregates": [
+                {
+                    "name": "total_likes",
+                    "function": "sum",
+                    "measure": "like"
+                },
+
+                {
+                    "name": "total_shares",
+                    "function": "sum",
+                    "measure": "share"
+                },
+
+                {
+                    "name": "min_likes",
+                    "function": "min",
+                    "measure": "like"
+                },
+
+                {
+                    "name": "min_shares",
+                    "function": "min",
+                    "measure": "share"
+                },
+
+                {
+                    "name": "max_likes",
+                    "function": "max",
+                    "measure": "like"
+                },
+
+                {
+                    "name": "max_shares",
+                    "function": "max",
+                    "measure": "share"
+                },
+
+                {
+                    "name": "avg_likes",
+                    "function": "avg",
+                    "measure": "like"
+                },
+
+                {
+                    "name": "avg_shares",
+                    "function": "avg",
+                    "measure": "share"
+                },
+
+                {
+                    "name": "total_comments",
+                    "function": "sum",
+                    "measure": "comment"
+                },
+
+                {
+                    "name": "total_ctr",
+                    "function": "sum",
+                    "measure": "ctr"
+                },
+
+                {
+                    "name": "min_comments",
+                    "function": "min",
+                    "measure": "comment"
+                },
+
+                {
+                    "name": "min_ctr",
+                    "function": "min",
+                    "measure": "ctr"
+                },
+
+                {
+                    "name": "max_comments",
+                    "function": "max",
+                    "measure": "comment"
+                },
+
+                {
+                    "name": "max_ctr",
+                    "function": "max",
+                    "measure": "ctr"
+                },
+
+                {
+                    "name": "avg_comments",
+                    "function": "avg",
+                    "measure": "comment"
+                },
+
+                {
+                    "name": "avg_ctr",
+                    "function": "avg",
+                    "measure": "ctr"
+                },
+
+                {
+                    "name": "record_count",
+                    "function": "count"
+                }
+
+            ],
+
+	    "mappings":{
+                "pub_date.year": "year",
+                "pub_date.month": "month",
+                "pub_date.day": "day",
+                "pub_date.hour": "hour",
+                "pub_date.mins": "mins"
+            }
+
+        },
+	{
+            "name": "LATEST_25_POSTS",
+            "dimensions": ["name", "category", "author", "pub_date", "no_of_images", "no_of_videos", "head_len", "no_of_abusive_words"],
+            "measures": [
+                {"name": "like", "label": "Likes"},
+                {"name": "share", "label": "Shares"},
+                {"name": "comment", "label": "Comments"},
+                {"name": "ctr", "label": "C.T.R."},
+		{"name": "pageviews", "label": "Page Views"},
+		{"name": "uniquePageviews", "label": "Unique Page Views"},
+		{"name": "avgTimeOnPage", "label": "Average Time on Page"},
+		{"name": "newUsers", "label": "New Users"},
+		{"name": "bounceRate", "label": "Bounce Rate"}
+            ],
+            "aggregates": [
+                {
+                    "name": "total_likes",
+                    "function": "sum",
+                    "measure": "like",
+		    "label": "Total Likes"
+                },
+
+                {
+                    "name": "total_shares",
+                    "function": "sum",
+                    "measure": "share",
+                    "label": "Total Shares"
+                },
+
+                {
+                    "name": "min_likes",
+                    "function": "min",
+                    "measure": "like",
+                    "label": "Min Likes"
+                },
+
+                {
+                    "name": "min_shares",
+                    "function": "min",
+                    "measure": "share",
+                    "label": "Min Shares"
+                },
+
+                {
+                    "name": "max_likes",
+                    "function": "max",
+                    "measure": "like",
+                    "label": "Max Likes"
+                },
+
+                {
+                    "name": "max_shares",
+                    "function": "max",
+                    "measure": "share",
+                    "label": "Max Shares"
+                },
+
+                {
+                    "name": "avg_likes",
+                    "function": "avg",
+                    "measure": "like",
+                    "label": "Average Likes"
+                },
+
+                {
+                    "name": "avg_shares",
+                    "function": "avg",
+                    "measure": "share",
+                    "label": "Average Shares"
+                },
+
+                {
+                    "name": "total_comments",
+                    "function": "sum",
+                    "measure": "comment",
+                    "label": "Total Comments"
+                },
+
+                {
+                    "name": "total_ctr",
+                    "function": "sum",
+                    "measure": "ctr",
+                    "label": "Total CTR"
+                },
+
+                {
+                    "name": "min_comments",
+                    "function": "min",
+                    "measure": "comment",
+                    "label": "Min Comments"
+                },
+
+                {
+                    "name": "min_ctr",
+                    "function": "min",
+                    "measure": "ctr",
+                    "label": "Min CTR"
+                },
+
+                {
+                    "name": "max_comments",
+                    "function": "max",
+                    "measure": "comment",
+                    "label": "Max Comments"
+                },
+
+                {
+                    "name": "max_ctr",
+                    "function": "max",
+                    "measure": "ctr",
+                    "label": "Max CTR"
+                },
+
+                {
+                    "name": "avg_comments",
+                    "function": "avg",
+                    "measure": "comment",
+                    "label": "Average Comments"
+                },
+
+                {
+                    "name": "avg_ctr",
+                    "function": "avg",
+                    "measure": "ctr",
+                    "label": "Average CTR"
+                },
+
+		{
+                    "name": "total_pageviews",
+                    "function": "sum",
+                    "measure": "pageviews",
+                    "label": "Total Page Views"
+                },
+
+                {
+                    "name": "total_timeOnPage",
+                    "function": "sum",
+                    "measure": "avgTimeOnPage",
+                    "label": "Total Time On Page"
+                },
+
+                {
+                    "name": "min_pageviews",
+                    "function": "min",
+                    "measure": "pageviews",
+                    "label": "Min Page Views"
+                },
+
+                {
+                    "name": "min_timeOnPage",
+                    "function": "min",
+                    "measure": "avgTimeOnPage",
+                    "label": "Min Time On Page"
+                },
+
+                {
+                    "name": "max_pageviews",
+                    "function": "max",
+                    "measure": "pageviews",
+                    "label": "Max Page Views"
+                },
+
+                {
+                    "name": "max_timeOnPage",
+                    "function": "max",
+                    "measure": "avgTimeOnPage",
+		    "label": "Max Time On Page"
+		},
+
+		{
+                    "name": "avg_pageviews",
+                    "function": "avg",
+                    "measure": "pageviews",
+                    "label": "Average Page Views"
+                },
+
+                {
+                    "name": "avg_avgTimeOnPage",
+                    "function": "avg",
+                    "measure": "avgTimeOnPage",
+                    "label": "Average Time On Page"
+                },
+
+		{
+                    "name": "total_bouncerate",
+                    "function": "sum",
+                    "measure": "bounceRate",
+                    "label": "Total Bounce Rate"
+                },
+
+		{
+                    "name": "min_bouncerate",
+                    "function": "min",
+                    "measure": "bounceRate",
+                    "label": "Min Bounce Rate"
+                },
+
+		{
+                    "name": "max_bouncerate",
+                    "function": "max",
+                    "measure": "bounceRate",
+                    "label": "Max Bounce Rate"
+                },
+
+		{
+                    "name": "avg_bouncerate",
+                    "function": "avg",
+                    "measure": "bounceRate",
+                    "label": "Average Bounce Rate"
+                },
+
+		{
+                    "name": "total_uniquePageviews",
+                    "function": "sum",
+                    "measure": "uniquePageviews",
+                    "label": "Total Unique Page Views"
+                },
+
+                {
+                    "name": "min_uniquePageviews",
+                    "function": "min",
+                    "measure": "uniquePageviews",
+                    "label": "Min Unique Page Views"
+                },
+
+                {
+                    "name": "max_uniquePageviews",
+                    "function": "max",
+                    "measure": "uniquePageviews",
+                    "label": "Max Unique Page Views"
+                },
+
+                {
+                    "name": "avg_uniquePageviews",
+                    "function": "avg",
+                    "measure": "uniquePageviews",
+                    "label": "Average Unique Page Views"
+                },
+
+		{
+                    "name": "total_newusers",
+                    "function": "sum",
+                    "measure": "newUsers",
+                    "label": "Total New Users"
+                },
+
+                {
+                    "name": "min_newusers",
+                    "function": "min",
+                    "measure": "newUsers",
+                    "label": "Min New Users"
+                },
+
+                {
+                    "name": "max_newusers",
+                    "function": "max",
+                    "measure": "newUsers",
+                    "label": "Max New Users"
+                },
+
+                {
+                    "name": "avg_newusers",
+                    "function": "avg",
+                    "measure": "newUsers",
+                    "label": "Average New Users"
+                },
+
+                {
+                    "name": "record_count",
+                    "function": "count"
+                }
+            ],
+	    "mappings":{
+		"pub_date.year": "year",
+		"pub_date.month": "month",
+		"pub_date.day": "day",
+		"pub_date.hour": "hour",
+		"pub_date.mins": "mins"
+	    } 
+        }
+    ]
+}
