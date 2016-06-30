@@ -1819,7 +1819,6 @@ angular.module('cv.views').service("viewsService", ['$rootScope', '$window', 'cv
 		} else {
 			params = data;
 		}
-
 		// FIXME: cvOptions shall not be passed, and getControlsHidden() shall possibly be part of this view service
 		var view = cubesviewer.CubeView(cvOptions, this.lastViewId, type);
 		$.extend(view.params, params);
@@ -1986,6 +1985,8 @@ cubesviewer.CubeView = function(cvOptions, id, type) {
 		view.params.mode = mode;
 		view.invalidateDefs();
 	};
+
+	view.params.rec_filter = 1000;
 
 	return view;
 
@@ -2335,16 +2336,20 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 
 	};
 
-	$scope.setRecFilter = function(i){
-		rec_filter = i;
-		console.log(rec_filter);
+	$scope.clearRecFilter = function(){
+		$scope.view.params.rec_filter = 1000;
 		$scope.refreshView();
-	}
+	};
+
+	$scope.setRecFilter = function(i){
+		$scope.view.params.rec_filter = i;
+		$scope.refreshView();
+	};
 
 	$scope.clearFilters = function() {
 		$scope.view.params.cuts = [];
 		$scope.view.params.datefilters = [];
-		rec_filter = 1000;
+		$scope.view.params.rec_filter = 1000;
 		$scope.refreshView();
 	};
 
@@ -4064,7 +4069,6 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	 */
 	$scope.drawChartBarsVertical = function () {
 		var view = $scope.view;
-		console.log(view);
 		var dataRows = $scope.view.grid.data;
 		var columnDefs = view.grid.columnDefs;
 		
@@ -4115,17 +4119,16 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeChartBarsVertica
 	    var m = [];
 	    if (view.params.drilldown[0].localeCompare("name") == 0 && view.params.drilldown.length==1 ){
 			if (view.params.yaxis.indexOf("max") > -1){	
-				if (d.length > rec_filter){
-					console.log(rec_filter);
-					for (var i=d.length-1; i>d.length-1-rec_filter; i--){
+				if (d.length > $scope.view.params.rec_filter){
+					for (var i=d.length-1; i>d.length-1-$scope.view.params.rec_filter; i--){
 						m.push(d[i]);
 					}
 					d = m;
 				}
 			}
 			else if (view.params.yaxis.indexOf("min") > -1) {
-				if (d.length > rec_filter){
-					for (var i=0; i<rec_filter; i++){
+				if (d.length > $scope.view.params.rec_filter){
+					for (var i=0; i<$scope.view.params.rec_filter; i++){
 						m.push(d[i]);
 					}
 					d = m;
@@ -7073,48 +7076,19 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "        </ul>\n" +
     "    </li>\n" +
     "\n" +
-    "    <!--\n" +
     "    <li class=\"dropdown-submenu\">\n" +
-    "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-arrows-h\"></i> Range filter</a>\n" +
-    "        <ul class=\"dropdown-menu\">\n" +
-    "\n" +
-    "          <li on-repeat-done ng-repeat-start=\"dimension in view.cube.dimensions\" ng-if=\"dimension.levels.length == 1\" ng-click=\"showDimensionFilter(dimension.name);\">\n" +
-    "            <a href=\"\">{{ dimension.label }}</a>\n" +
-    "          </li>\n" +
-    "          <li ng-repeat-end ng-if=\"dimension.levels.length != 1\" class=\"dropdown-submenu\">\n" +
-    "            <a tabindex=\"0\">{{ dimension.label }}</a>\n" +
-    "\n" +
-    "            <ul ng-if=\"dimension.hierarchies_count() != 1\" class=\"dropdown-menu\">\n" +
-    "                <li ng-repeat=\"(hikey,hi) in dimension.hierarchies\" class=\"dropdown-submenu\">\n" +
-    "                    <a tabindex=\"0\" href=\"\" onclick=\"return false;\">{{ hi.label }}</a>\n" +
-    "                    <ul class=\"dropdown-menu\">\n" +
-    "                        <li ng-repeat=\"level in hi.levels\" ng-click=\"showDimensionFilter(dimension.name + '@' + hi.name + ':' + level.name )\"><a href=\"\">{{ level.label }}</a></li>\n" +
-    "                    </ul>\n" +
-    "                </li>\n" +
-    "            </ul>\n" +
-    "\n" +
-    "            <ul ng-if=\"dimension.hierarchies_count() == 1\" class=\"dropdown-menu\">\n" +
-    "                <li ng-repeat=\"level in dimension.default_hierarchy().levels\" ng-click=\"showDimensionFilter(level);\"><a href=\"\">{{ level.label }}</a></li>\n" +
-    "            </ul>\n" +
-    "\n" +
-    "          </li>\n" +
-    "\n" +
-    "        </ul>\n" +
-    "    </li>\n" +
-    "     -->\n" +
-    "\n" +
-    "    <li class=\"dropdown-submenu\">\n" +
-    "        <a tabindex=\"0\"><i class=\"fa fa-fw fa-calendar\"></i> Num of Records filter</a>\n" +
-    "        <ul class=\"dropdown-menu\">\n" +
-    "\n" +		"<li><a ng-click=\"setRecFilter(5)\">5</a></li>" +
-	"\n" +		"<li><a ng-click=\"setRecFilter(10)\">10</a></li>" +
-	"\n" +		"<li><a ng-click=\"setRecFilter(25)\">25</a></li>" +
-    "        </ul>\n" +
+    "        <a tabindex=\"0\"> Num of Records filter</a>\n" +
+    "        	<ul class=\"dropdown-menu\">\n" +
+    "\n" +			"<li ng-if=\"view.params.mode=='chart' && view.params.drilldown[0]=='name' && (view.params.yaxis.indexOf('min') > -1 || view.params.yaxis.indexOf('max') > -1)\"><a ng-click=\"setRecFilter(5)\">5</a></li>" +
+    "\n" +			"<li ng-if=\"view.params.mode=='chart' && view.params.drilldown[0]=='name' && (view.params.yaxis.indexOf('min') > -1 || view.params.yaxis.indexOf('max') > -1)\"><a ng-click=\"setRecFilter(10)\">10</a></li>" +
+    "\n" +			"<li ng-if=\"view.params.mode=='chart' && view.params.drilldown[0]=='name' && (view.params.yaxis.indexOf('min') > -1 || view.params.yaxis.indexOf('max') > -1)\"><a ng-click=\"setRecFilter(25)\">25</a></li>" +
+    "\n" +			"<li ng-if=\"!(view.params.mode=='chart' && view.params.drilldown[0]=='name' && (view.params.yaxis.indexOf('min') > -1 || view.params.yaxis.indexOf('max') > -1))\"><i>No record filter for this config</i></li>" +
+    "        	</ul>\n" +
     "    </li>\n" +
 	"\n" +
     "    <div class=\"divider\"></div>\n" +
     "\n" +
-    "    <li ng-class=\"{ 'disabled': view.params.cuts.length == 0 && view.params.datefilters.length == 0 && rec_filter==1000}\" ng-click=\"clearFilters()\"><a href=\"\"><i class=\"fa fa-fw fa-trash\"></i> Clear filters</a></li>\n" +
+    "    <li ng-class=\"{ 'disabled': view.params.cuts.length == 0 && view.params.datefilters.length == 0 && view.params.rec_filter==1000}\" ng-click=\"clearFilters()\"><a href=\"\"><i class=\"fa fa-fw fa-trash\"></i> Clear filters</a></li>\n" +
     "\n" +
     "  </ul>\n"
   );
@@ -7385,6 +7359,8 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "\n" +
     "                <div ng-include=\"'views/cube/filter/datefilter.html'\"></div>\n" +
     "\n" +
+    "		     <div ng-include=\"'views/cube/filter/recfilter.html'\"></div>\n" +
+    "\n" +
     "                <div class=\"cv-view-viewinfo-extra\">\n" +
     "\n" +
     "                    <div ng-if=\"view.params.mode == 'series' || view.params.mode == 'chart'\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-extra\" style=\"color: black; background-color: #ccccff;\">\n" +
@@ -7474,6 +7450,42 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
     "</div>\n"
   );
 
+  $templateCache.put('views/cube/filter/recfilter.html',
+    "<div class=\"cv-view-recfilter\">\n" +
+    "    <div ng-if=\"view.params.rec_filter!=1000 && view.params.mode=='chart' && view.params.drilldown[0]=='name' && (view.params.yaxis.indexOf('min') > -1 || view.params.yaxis.indexOf('max') > -1)\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut text-left\" style=\"color: black; background-color: #ffdddd; text-align: left;\">\n" +
+    "        <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i> <b class=\"hidden-xs hidden-sm\">Filter:</b> Number of Records:</span>\n" +
+    "\n" +
+    
+    "\n" +
+    "        <div class=\"cv-recfilter\" style=\"overflow: visible; display: inline-block;\">\n" +
+    "\n" +
+    "            <form class=\"form-inline\">\n" +
+    "\n" +
+    "                 <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
+    "                    <div class=\"dropdown\" style=\"display: inline-block;\">\n" +
+    "                      <button ng-hide=\"view.getControlsHidden()\" style=\"height: 20px; width: 30px;\" class=\"btn btn-default btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
+    "                    	  {{ view.params.rec_filter }}   <span class=\"caret\"></span>\n" +
+    "                      </button>\n" +
+    "\n" +
+    "                      <ul class=\"dropdown-menu cv-view-menu cv-view-menu-view\">\n" +                        
+    "                        <li ng-click=\"setRecFilter(5)\"><a><i class=\"fa fa-fw\"></i> 5</a></li>\n" +
+    "                        <li ng-click=\"setRecFilter(10)\"><a><i class=\"fa fa-fw\"></i> 10</a></li>\n" +
+    "                        <li ng-click=\"setRecFilter(25)\"><a><i class=\"fa fa-fw\"></i> 25</a></li>\n" +
+    "                      </ul>\n" +
+    "                    </div>\n" +
+    "                 </div>\n" +
+    "\n" +
+    "            </form>\n" +
+    "\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <button type=\"button\" ng-hide=\"view.getControlsHidden()\" ng-click=\"clearRecFilter()\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
+    "        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "\n"
+  );
 
   $templateCache.put('views/cube/filter/datefilter.html',
     "<div class=\"cv-view-viewinfo-date\">\n" +
