@@ -2342,7 +2342,11 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeController", ['$
 	};
 
 	$scope.setRecFilter = function(i){
-		$scope.view.params.rec_filter = i;
+		if (i == 'custom'){
+			$scope.flag = -1;
+		}
+		else		
+			$scope.view.params.rec_filter = i;
 		$scope.refreshView();
 	};
 
@@ -3103,7 +3107,27 @@ angular.module('cv.views.cube').controller("CubesViewerViewsCubeFilterDateContro
 }]);
 
 
-;/*
+;
+
+angular.module('cv.views.cube').controller("CubesViewerViewsCubeRecCountController", ['$rootScope', '$scope', '$filter', 'cvOptions', 'cubesService', 'viewsService', function ($rootScope, $scope, $filter, cvOptions, cubesService, viewsService) {
+
+	$scope.initialize = function() {
+		$scope.nrec = $scope.view.params.rec_filter;
+	}
+
+	$scope.updateRecFilter = function(){
+		if ($scope.flag == -1 && $scope.nrec > 0)
+			$scope.view.params.rec_filter = $scope.nrec;
+
+		$scope.refreshView();
+	};
+
+	$scope.$watch("nrec", $scope.updateRecFilter);
+
+	$scope.initialize();
+}]);
+
+/*
  * CubesViewer
  * Copyright (c) 2012-2016 Jose Juan Montes, see AUTHORS for more details
  *
@@ -7451,36 +7475,46 @@ angular.module('cv.cubes').service("gaService", ['$rootScope', '$http', '$cookie
   );
 
   $templateCache.put('views/cube/filter/recfilter.html',
-    "<div class=\"cv-view-recfilter\">\n" +
-    "    <div ng-if=\"view.params.rec_filter!=1000 && view.params.mode=='chart' && view.params.drilldown[0]=='name' && (view.params.yaxis.indexOf('min') > -1 || view.params.yaxis.indexOf('max') > -1)\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut text-left\" style=\"color: black; background-color: #ffdddd; text-align: left;\">\n" +
-    "        <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i> <b class=\"hidden-xs hidden-sm\">Filter:</b> Number of Records:</span>\n" +
+    "<div class=\"cv-view-viewinfo-date\">\n" +
+    "    <div ng-if=\"view.params.rec_filter!=1000 && view.params.mode=='chart' && view.params.drilldown[0]=='name' && (view.params.yaxis.indexOf('min') > -1 || view.params.yaxis.indexOf('max') > -1)\" ng-controller=\"CubesViewerViewsCubeRecCountController\" class=\"label label-secondary cv-infopiece cv-view-viewinfo-cut text-left\" style=\"color: black; background-color: #ffdddd; text-align: left;\">\n" +
+    "        <span style=\"max-width: 280px; white-space: nowrap;\"><i class=\"fa fa-fw fa-filter\"></i>Number of Records:</span>\n" +
     "\n" +
-    
-    "\n" +
-    "        <div class=\"cv-recfilter\" style=\"overflow: visible; display: inline-block;\">\n" +
+    "        <div class=\"cv-datefilter\" style=\"overflow: visible; display: inline-block;\">\n" +
     "\n" +
     "            <form class=\"form-inline\">\n" +
     "\n" +
     "                 <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
     "                    <div class=\"dropdown\" style=\"display: inline-block;\">\n" +
-    "                      <button ng-hide=\"view.getControlsHidden()\" style=\"height: 20px; width: 30px;\" class=\"btn btn-default btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
-    "                    	  {{ view.params.rec_filter }}   <span class=\"caret\"></span>\n" +
+    "                      <button ng-hide=\"view.getControlsHidden()\" style=\"height: 20px; width: 60px;\" class=\"btn btn-default btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" data-submenu>\n" +
+    "                    	  <div ng-if=\"flag!=-1\">{{ view.params.rec_filter }} <span class=\"caret\"></span></div>\n" +
+    "                    	  <div ng-if=\"flag==-1\">Custom <span class=\"caret\"></span></div>\n" +
     "                      </button>\n" +
     "\n" +
-    "                      <ul class=\"dropdown-menu cv-view-menu cv-view-menu-view\">\n" +                        
+    "                      <ul class=\"dropdown-menu cv-view-menu cv-view-menu-view\">\n" +
+    "                        <li ng-click=\"setRecFilter('custom')\"><a><i class=\"fa fa-fw\"></i> Custom</a></li>\n" +
+    "                        <div class=\"divider\"></div>\n" +
     "                        <li ng-click=\"setRecFilter(5)\"><a><i class=\"fa fa-fw\"></i> 5</a></li>\n" +
     "                        <li ng-click=\"setRecFilter(10)\"><a><i class=\"fa fa-fw\"></i> 10</a></li>\n" +
     "                        <li ng-click=\"setRecFilter(25)\"><a><i class=\"fa fa-fw\"></i> 25</a></li>\n" +
     "                      </ul>\n" +
     "                    </div>\n" +
     "                 </div>\n" +
+    "            <div ng-show=\"flag==-1\" style=\"display: inline-block; margin: 0px;\">\n" +
+    "\n" +
+    "                 &rArr;\n" +
+    "\n" +
+    "                 <div class=\"form-group\" style=\"display: inline-block; margin: 0px;\">\n" +
+    "                    <p class=\"input-group disabled\" style=\"margin: 0px; display: inline-block;\">\n" +
+    "                      <input ng-disabled=\"view.getControlsHidden()\" autocomplete=\"off\" type=\"text\" style=\"height: 20px; width: 80px; display: inline-block;\" class=\"form-control input-sm\" ng-model=\"nrec\" ng-required=\"true\" close-text=\"Close\" />\n" +
+    "                      <span ng-hide=\"view.getControlsHidden()\"  class=\"input-group-btn\" style=\"display: inline-block;\">\n" +
+    "                      </span>\n" +
+    "                    </p>\n" +
+    "                </div>\n" +
     "\n" +
     "            </form>\n" +
-    "\n" +
     "        </div>\n" +
     "\n" +
-    "        <button type=\"button\" ng-hide=\"view.getControlsHidden()\" ng-click=\"clearRecFilter()\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 10px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
-    "        <button type=\"button\" class=\"btn btn-info btn-xs\" style=\"visibility: hidden; margin-left: -20px;\"><i class=\"fa fa-fw fa-info\"></i></button>\n" +
+    "        <button type=\"button\" ng-hide=\"view.getControlsHidden()\" ng-click=\"clearRecFilter()\" class=\"btn btn-danger btn-xs\" style=\"margin-left: 00px;\"><i class=\"fa fa-fw fa-trash\"></i></button>\n" +
     "\n" +
     "    </div>\n" +
     "</div>\n" +
