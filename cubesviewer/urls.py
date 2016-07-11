@@ -33,7 +33,6 @@ from cubesviewer.views.cubesviewer import *
 from cubesviewer.api import proxy
 from cubesviewer.api.view import ViewSaveView, ViewListView
 from django.views.decorators.csrf import csrf_exempt
-from cubesviewer.api.saved_views import get_saved_views
 
 # Enable admin
 admin.autodiscover()
