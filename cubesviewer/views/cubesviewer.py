@@ -28,6 +28,7 @@
 from django.views.generic.base import TemplateView
 from django.conf import settings
 from get_engagements import *
+from get_info import *
 
 class CubesViewerView(TemplateView):
 
@@ -52,6 +53,18 @@ class CubesViewerSavedView(TemplateView):
         context["cubesviewer_backend_url"] = settings.CUBESVIEWER_BACKEND_URL
 	context["showAllSaved"] = 1
         return context
+
+class API_DATA(TemplateView):
+    template_name = "cubesviewer/temp.html"
+    exclude = ()
+
+    def get_context_data(self, **kwargs):
+	context = TemplateView.get_context_data(self, **kwargs)
+	
+	context["data"] = get_all_data()
+	context["authors"] = get_all_authors()
+
+	return context
 
 def get_post_engagements(request):
 	mid = request.POST.get('_id', False)

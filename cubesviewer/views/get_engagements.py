@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import sys
 import json
 from pymongo import MongoClient
@@ -16,7 +16,12 @@ def get_post_by_shares(mid):
        	shares['_id'] = mid
         shares['insights'] = []
 
-        rec = db.post_history.find({"_id":ObjectId(mid)})
+	today = str(date.today())
+
+	today_minus7 = str(date.today() - timedelta(days=7))
+
+	#get only week old post
+        rec = db.post_history.find({"insights": { "$elemMatch" : { "date": {"$gte": today_minus7, "$lt": today}}} ,"_id":ObjectId(mid)})
 
 	if rec.count() != 1:
 		return JsonResponse(json.dumps({"error": "invalid id"}), safe=False)
@@ -46,7 +51,12 @@ def get_post_by_engagements(mid):
 	engagements['_id'] = mid
 	engagements['insights'] = []
 	
-	rec = db.post_history.find({"_id":ObjectId(mid)})
+	today = str(date.today())
+
+        today_minus7 = str(date.today() - timedelta(days=7))
+
+        #get only week old post
+	rec = db.post_history.find({"insights": { "$elemMatch" : { "date": {"$gte": today_minus7, "$lt": today}}}, "_id":ObjectId(mid)})
 
 	if rec.count() != 1:
                 return JsonResponse(json.dumps({"error": "invalid id"}), safe=False)
@@ -75,7 +85,12 @@ def get_post_by_unique_users(mid):
         unique_users['_id'] = mid
         unique_users['insights'] = []
 
-        rec = db.post_history.find({"_id":ObjectId(mid)})
+	today = str(date.today())
+
+        today_minus7 = str(date.today() - timedelta(days=7))
+
+        #get only week old post
+        rec = db.post_history.find({"insights": { "$elemMatch" : { "date": {"$gte": today_minus7, "$lt": today}}}, "_id":ObjectId(mid)})
 
 	if rec.count() != 1:
                 return JsonResponse(json.dumps({"error": "invalid id"}), safe=False)
@@ -104,7 +119,12 @@ def get_comments_by_authors(auth):
         author_comments['author'] = auth
         author_comments['insights'] = []
 
-        rec = db.post_history.find({"author": auth})
+	today = str(date.today())
+
+        today_minus7 = str(date.today() - timedelta(days=7))
+
+        #get only week old post
+        rec = db.post_history.find({"insights": { "$elemMatch" : { "date": {"$gte": today_minus7, "$lt": today}}}, "author": auth})
 
         for r in rec:
                 auth = r
@@ -131,7 +151,12 @@ def get_engagements_by_authors(auth):
         author_engagements['author'] = auth
         author_engagements['insights'] = []
 
-        rec = db.post_history.find({"author": auth})
+	today = str(date.today())
+
+        today_minus7 = str(date.today() - timedelta(days=7))
+
+        #get only week old post
+        rec = db.post_history.find({"insights": { "$elemMatch" : { "date": {"$gte": today_minus7, "$lt": today}}}, "author": auth})
 
         for r in rec:
                 eng = r
