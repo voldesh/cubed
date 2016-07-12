@@ -1,121 +1,149 @@
-import os.path
-BASE = os.path.dirname(os.path.abspath(__file__))
-
-from cubes import Workspace, Cell, PointCut
 from datetime import datetime, timedelta
 import sys
 import json
+from pymongo import MongoClient
+from bson.objectid import ObjectId
 from django.http import JsonResponse
 
-#-------------------------------------------------------------#
-workspace = Workspace()
-workspace.register_default_store("sql", url="sqlite:///"+os.path.join(BASE,"myData.sqlite"))
-workspace.import_model(os.path.join(BASE,"modal.json"))
+#------------------------------------------------------------#
 
-browser = workspace.browser("FB_POSTS_DATA")
+def get_post_by_shares(mid):
+	mc = MongoClient()
+        
+        db = mc.olap
 
-#-------------------------------------------------------------#
+        shares = {}
+       	shares['_id'] = mid
+        shares['insights'] = []
 
-d =  datetime.now() - timedelta(days=1)
+        rec = db.post_history.find({"_id":ObjectId(mid)})
 
-cut = PointCut("pub_date", [d.year, d.month, d.day-6], None)
+	if rec.count() != 1:
+		return JsonResponse(json.dumps({"error": "invalid id"}), safe=False)
 
-cell = Cell(browser.cube, cuts = [cut])
+        for r in rec:
+                sha = r
 
-#-------------------------------------------------------------#
+        for ins in sha['insights']:
+                shared = ins['share']
 
-def get_post_by_shares():
-	result = browser.aggregate(cell, drilldown=["name"])
+                shared_dict = {}
+                shared_dict['engagements'] = shared
 
-	shares = []
-
-	for row in result.table_rows("name"):
-                total_shares = row.record["total_shares"]
-
-                post_by_share = {}
-                post_by_share["date"] = str(d)
-                post_by_share["post_name"] = row.label
-                post_by_share["total_shares"] = total_shares
-
-                shares.append(post_by_share)
-
+                shares['insights'].append(shared_dict)
+	
     	return JsonResponse(json.dumps(shares), safe=False)
 
 
 #------------------------------------------------------------#
 
-def get_post_by_engagements():
-	result = browser.aggregate(cell, drilldown=["name"])
-
-        engagements = []
+def get_post_by_engagements(mid):
+	mc = MongoClient()	
 	
-	for row in result.table_rows("name"):
-		total_engagements = row.record["total_likes"] + row.record["total_shares"] + row.record["total_comments"]
+	db = mc.olap
 
-		post_by_engagements = {}
-                post_by_engagements["date"] = str(d)
-                post_by_engagements["post_name"] = row.label
-                post_by_engagements["total_engagements"] = total_engagements
+        engagements = {}
+	engagements['_id'] = mid
+	engagements['insights'] = []
+	
+	rec = db.post_history.find({"_id":ObjectId(mid)})
 
-		engagements.append( post_by_engagements )
+	if rec.count() != 1:
+                return JsonResponse(json.dumps({"error": "invalid id"}), safe=False)
 
+	for r in rec:
+		eng = r
+
+	for ins in eng['insights']:
+		engaged = ins['comment'] + ins['share'] + ins['like']
+
+		engaged_dict = {}
+		engaged_dict['engagements'] = engaged
+
+		engagements['insights'].append(engaged_dict)
+		
 	return JsonResponse(json.dumps(engagements), safe=False)
 
 #-------------------------------------------------------------#
 
-def get_post_by_unique_users():
-	result = browser.aggregate(cell, drilldown=["name"])
+def get_post_by_unique_users(mid):
+	mc = MongoClient()
 
-        unique_users = []
+        db = mc.olap
 
-	for row in result.table_rows("name"):
-		total_newusers = row.record['total_newusers']
+        unique_users = {}
+        unique_users['_id'] = mid
+        unique_users['insights'] = []
 
-		post_by_unique_users = {}
-                post_by_unique_users["date"] = str(d)
-                post_by_unique_users["post_name"] = row.label
-                post_by_unique_users["total_newusers"] = total_newusers
+        rec = db.post_history.find({"_id":ObjectId(mid)})
 
-		unique_users.append(post_by_unique_users)
+	if rec.count() != 1:
+                return JsonResponse(json.dumps({"error": "invalid id"}), safe=False)
 
+        for r in rec:
+                uni = r
+
+        for ins in uni['insights']:
+                uniq = ins['uu']
+
+                uniq_dict = {}
+                uniq_dict['engagements'] = uniq
+
+                unique_users['insights'].append(uniq_dict)
+	
 	return JsonResponse(json.dumps(unique_users), safe=False)
 
 #-------------------------------------------------------------#
 
-def get_comments_by_authors():
-	result = browser.aggregate(cell, drilldown=["author"])
+def get_comments_by_authors(auth):
+	mc = MongoClient()
 
-	author_comments = []
+        db = mc.olap
 
-	for row in result.table_rows("author"):
-		total_comments = row.record["total_comments"]
-		
-		comments_by_author = {}
-		comments_by_author["date"] = str(d)
-		comments_by_author["author"] = row.label
-		comments_by_author["total_comments"] = total_comments
+        author_comments = {}
+        author_comments['author'] = auth
+        author_comments['insights'] = []
 
-		author_comments.append( comments_by_author )
+        rec = db.post_history.find({"author": auth})
 
+        for r in rec:
+                auth = r
+
+		for ins in auth['insights']:
+			comm = ins['comment']
+
+			comm_dict = {}
+			comm_dict['engagements'] = comm
+			comm_dict['date'] = ins['date']
+
+			author_comments['insights'].append(comm_dict)
+	
 	return JsonResponse(json.dumps(author_comments), safe=False)
 
 #-------------------------------------------------------------#
 
-def get_engagements_by_authors():
-	result = browser.aggregate(cell, drilldown=["author"])
-        
-        author_engagements = []
+def get_engagements_by_authors(auth):
+	mc = MongoClient()
 
-	for row in result.table_rows("author"):
+        db = mc.olap
 
-		total_engagements = row.record["total_likes"] + row.record["total_shares"] + row.record["total_comments"]
+        author_engagements = {}
+        author_engagements['author'] = auth
+        author_engagements['insights'] = []
 
-		engagements_by_author = {}
-                engagements_by_author["date"] = str(d)
-                engagements_by_author["author"] = row.label
-                engagements_by_author["total_engagements"] = total_engagements
+        rec = db.post_history.find({"author": auth})
 
-                author_engagements.append( engagements_by_author )
+        for r in rec:
+                eng = r
 
+		for ins in eng['insights']:
+			engaged = ins['comment'] + ins['share'] + ins['like']
+
+			engaged_dict = {}
+			engaged_dict['engagements'] = engaged
+			engaged_dict['date'] = ins['date']
+
+			author_engagements['insights'].append(engaged_dict)
+	
 	return JsonResponse(json.dumps(author_engagements), safe=False)
 

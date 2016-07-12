@@ -54,16 +54,41 @@ class CubesViewerSavedView(TemplateView):
         return context
 
 def get_post_engagements(request):
-	return get_post_by_engagements()
+	mid = request.POST.get('_id', False)
+	
+	if mid is False:
+		return JsonResponse(json.dumps({"error": "no post data passed"}), safe=False)
+	
+	return get_post_by_engagements(mid)
 
 def get_post_shares(request):
-	return get_post_by_shares()
+	mid = request.POST.get('_id', False)
+
+        if mid is False:
+                return JsonResponse(json.dumps({"error": "no post data passed"}), safe=False)
+
+	return get_post_by_shares(mid)
 
 def get_post_unique_users(request):
-	return get_post_by_unique_users()
+	mid = request.POST.get('_id', False)
+
+        if mid is False:
+                return JsonResponse(json.dumps({"error": "no post data passed"}), safe=False)
+
+	return get_post_by_unique_users(mid)
 
 def get_comments_authors(request):
-	return get_comments_by_authors()
+	mauth = request.POST.get('author', False)
+
+        if mauth is False:
+                return JsonResponse(json.dumps({"error": "no post data passed"}), safe=False)
+
+	return get_comments_by_authors(mauth)
 
 def get_engagements_authors(request):
-	return get_engagements_by_authors()
+	mauth = request.POST.get('author', False)
+
+        if mauth is False:
+                return JsonResponse(json.dumps({"error": "no post data passed"}), safe=False)
+	
+	return get_engagements_by_authors(mauth)
